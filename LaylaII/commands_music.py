@@ -8,13 +8,29 @@ from youtube_dl import YoutubeDL
 from discord import FFmpegPCMAudio
 import os
 #import urllib.parse, urllib.request, re
+import requests
 from requests import get
 import subprocess
 import asyncio
+import urllib
+import simplejson
+from bs4 import BeautifulSoup
 
 def is_connected(ctx):
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
     return voice_client and voice_client.is_connected()
+
+def search(arg):
+    with YoutubeDL({'format': 'bestaudio', 'noplaylist':'True'}) as ydl:
+        try: requests.get(arg)
+        except: info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
+        else: info = ydl.extract_info(arg, download=False)
+    return (info, info['formats'][0]['url'])
+
+def get_title(url):
+    json = simplejson.load(urllib.request.urlopen(url))
+    title = json['entry']['title']['$t']
+    return title
 
 @withrepr(lambda x: 'Play the audio of a YouTube URL.')
 @client.command(aliases=['p'],pass_context=True)
@@ -33,36 +49,41 @@ async def play(ctx, *, query : str):
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
+            'noplaylist':'True',
             }],
         }
+        FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
-        # if request is a URL
+        if False:
+            # if request is a URL
+            if 'https' in query:
+                url = query
+                # get url without references to playlists or timestamps
+                try: url = url[:url.index('&')]
+                except ValueError: pass
+                print('url:'+url)
+
+
+            # if not, it is a search
+            else:
+                #id = subprocess.check_output(['youtube-dl',f'ytsearch:{query}','--get-id'])[:-1].decode('utf-8')
+                #url = f'www.youtube.com/watch?v={id}'
+                video, url = search(query)
+                #await ctx.send(f'Now playing: {info['title']}.')
+                print('url:'+url)
+
         if 'https' in query:
             url = query
             # get url without references to playlists or timestamps
             try: url = url[:url.index('&')]
             except ValueError: pass
-
-        # if not, it is a search
-        else:
-            id = subprocess.check_output(['youtube-dl',f'ytsearch:{query}','--get-id'])[:-1].decode('utf-8')
-            url = f'www.youtube.com/watch?v={id}'
+            print('url:'+url)
+        video, url = search(query)
 
 
-        # download audio
-        await ctx.send('retrieving audio...')
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-
-        # save song to song.mp3
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.rename(file, 'song.mp3')
-
-        # play song.mp3
-        await ctx.send(f'now playing: {url}')
-        ctx.guild.voice_client.play(FFmpegPCMAudio('song.mp3'))
-
+        #await ctx.send(f'Now playing: {get_title(url)}.')
+        #ctx.guild.voice_client.play(FFmpegPCMAudio(source, **FFMPEG_OPTS), after=lambda e: print('done', e))
+        ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS))
 
     elif ctx.author.voice and not Bot.connected:
         await ctx.send('im not joined yet')
