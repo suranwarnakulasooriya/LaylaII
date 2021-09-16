@@ -12,6 +12,7 @@ class Bot_Info:
         self.prefix = prefix
         self.token = token
         self.owner = owner
+        self.connected = False
 
 class Reactions(Cog):
     def __init__(self, client):
