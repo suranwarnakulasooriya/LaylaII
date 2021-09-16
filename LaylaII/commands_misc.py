@@ -11,6 +11,7 @@ async def hello(ctx):
     await ctx.send(embed=embeds.hello())
 
 # command die
+'''
 @client.command()
 async def die(ctx):
     if ctx.message.author.id == Bot.owner:
@@ -20,6 +21,7 @@ async def die(ctx):
         #await ctx.send(embed=embeds.kill()); sys.exit()
     else:
         await ctx.send(embed=embeds.deny())
+'''
 
 # command forcequit
 @client.command()
