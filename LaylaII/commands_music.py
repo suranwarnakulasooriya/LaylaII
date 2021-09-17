@@ -14,6 +14,19 @@ from discord import FFmpegPCMAudio # to stream audio
 import urllib
 import simplejson
 
+# set ytdl and ffmpeg options
+ydl_opts = {
+'format': 'bestaudio/best',
+'postprocessors': [{
+    'key': 'FFmpegExtractAudio',
+    'preferredcodec': 'mp3',
+    'preferredquality': '192',
+    'noplaylist':'True',
+    }]}
+
+FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+'options': '-vn'}
+        
 def is_connected(ctx):
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
     return voice_client and voice_client.is_connected()
@@ -34,20 +47,6 @@ def get_title(url):
 @client.command(aliases=['p'],pass_context=True)
 async def play(ctx, *, query : str):
     if ctx.author.voice and Bot.connected:
-
-        # set ytdl and ffmpeg options
-        ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-            'noplaylist':'True',
-            }],
-        }
-
-        FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-        'options': '-vn'}
 
         if 'https' in query: # if query is a url, remove extraneous parts of url
             url = query
