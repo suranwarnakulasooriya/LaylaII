@@ -9,6 +9,7 @@ from youtube_dl import YoutubeDL
 from requests import get
 
 from discord import FFmpegPCMAudio # to stream audio
+import asyncio
 
 # to get details of video
 import urllib
@@ -16,7 +17,7 @@ import simplejson
 
 # for music duration
 from datetime import timedelta as td
-from datetime import datetime
+import datetime
 #from time import clock
 
 # set ytdl and ffmpeg options
@@ -55,6 +56,10 @@ def get_time(sec):
             dur = dir[:i-1]; break
     return dur
 
+async def wait(duration):
+    asyncio.sleep(duration)
+    print("done")
+
 @withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search.')
 @client.command(aliases=['p'],pass_context=True)
 async def play(ctx, *, query : str):
@@ -67,19 +72,21 @@ async def play(ctx, *, query : str):
             #print('url:'+url)
 
         # search youtube for query (searching a url will return the url)
-        title, url, dur = search(query)
-        dur = get_time(dur)
+        title, url, duration = search(query)
+        dur = get_time(duration)
         print(all)
-        await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",
-        color=0x99a3a4)) # flavor text
+        await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4)) # flavor text
         await Q.add_song(Song(title,url,dur,ctx.author.mention))
-        ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e:skip(ctx))
-        #Bot.playtime = datetime.now()
+        ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after = lambda e: asyncio.run(skip(ctx,False)))
+        Bot.playtime = datetime.datetime.now()
 
     elif ctx.author.voice and not Bot.connected:
         await ctx.send('im not joined yet')
     elif not ctx.author.voice and Bot.connected:
         await ctx.send('youre not in a voice channel yourself')
+
+
+
 
 @withrepr(lambda x: 'See the current playing song.')
 @client.command(pass_context=True)
@@ -96,7 +103,8 @@ async def queue(ctx):
     if Q.loop_s: message += "\nThe current song is being looped."
     if Q.loop_q: message += "\mThe queue is being looped."
     message += '```'
-    await ctx.send(message)
+    if message == '``````': await ctx.send(embed=discord.Embed(description='Queue is empty.'))
+    else: await ctx.send(message)
 
 
 @withrepr(lambda x: 'Join the voice channel of the author.')
@@ -116,6 +124,7 @@ async def leave(ctx):
     if ctx.guild.voice_client in client.voice_clients:
         await voice.disconnect()
         Bot.connected = False
+        Q.queue = []
     else: await ctx.send('how can i leave a channel im not in')
 
 
@@ -137,10 +146,12 @@ async def resume(ctx):
 
 @withrepr(lambda x: 'Stops the current song and removes it from queue.')
 @client.command(aliases=['stop'],pass_context=True)
-async def skip(ctx):
+async def skip(ctx,manual=True):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
     ctx.guild.voice_client.stop()
-    Q.queue.pop(0)
+    if not manual: print('automatic'+Q.queue.pop(0).title)
+    else: print('not automatic',Q.queue.pop(0).title)
+    print(Q.queue[0].title)
     ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[0].url, **FFMPEG_OPTS))
 
 @withrepr(lambda x: 'Removes a certain index from the queue.')
