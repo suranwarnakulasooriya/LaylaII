@@ -13,6 +13,7 @@ class Bot_Info:
         self.token = token
         self.owner = owner
         self.connected = False
+        self.playtime = 0
 
 class Reactions(Cog):
     def __init__(self, client):
@@ -77,7 +78,70 @@ def withrepr(reprfun):
         return reprwrapper(reprfun, func)
     return _wrap
 
+class Song:
+  def __init__(self,title,url,length,request):
+    self.title = title
+    self.url = url
+    self.length = length
+    self.request = request
+  def __repr__(self):
+    return f"{self.title} : {self.url} : {self.length}"
+
+# make a queue attribute in the Bot class that is the Queue class to gain access to ctx
+class Queue:
+  def __init__(self,maxL):
+    # idk what the maxL should be, groovy had 10, id say 10-15
+    self.maxL = maxL
+    self.queue = []
+    self.loop_s = False
+    self.loop_q = False
+  def maxed(self,index=False):
+    if index or index == 0: i = index
+    else: i = len(self.queue)
+    if i > self.maxL or i < 0: return True
+    else: return False
+  async def play(self):
+    # play self.queue[0]
+    await ctx.send(f"Now playing: `{self.queue[0].title}`.")
+  async def add_song(self,song):
+    if not self.maxed(): self.queue.append(song)
+    else: await ctx,send('Queue maxed out.')
+  async def remove_song(self,index):
+    if maxed(index): await ctx.send("There's no song with that index")
+    else:
+      if index == 0: self.skip(True) # if index is [0] just skip it and delete
+      else: self.queue.pop(index)
+  def skip(self,delete=False): # also used to transition to next song
+    if (not self.loop_s or not self.loop_q) or delete:
+      self.queue.pop(0)
+      # delete exists if the current song is being deleted while on loop
+      # stop voice and play next song
+    else: pass # stop voice and play next song, but keep queue[0]
+
+  async def jump(self,index):
+    if maxed(index): await ctx.send("There's no song with that index")
+    else:
+      self.queue = self.queue[index:]
+      # stop voice and play next song
+  async def np(self):
+    time = 0#get time elapsed
+    await ctx.send(f"{time}/{self.queue[0].length}")
+  async def display(self):
+    message = ""
+    for i,song in enumerate(self.queue):
+      message += f"\n{i}) {song.title}  {song.length}"
+    if self.loop_s: message += "\nThe current song is being looped."
+    if self.loop_q: message += "\mThe queue is being looped."
+    await ctx.send(message)
+  def loop_song(self):
+    if self.loop_s: self.loop_s = False
+    else: self.loop_s = True
+  def loop_queue(self):
+    if self.loop_q: self.loop_q = False
+    else: self.loop_q = True
+
 bot_prefix = "."
 with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f:
     bot_token = f.read()
 bot_owner = 640303674895368194
+Q = Queue(14)

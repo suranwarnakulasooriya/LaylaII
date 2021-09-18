@@ -2,8 +2,8 @@
 # help
 # ==============================================================================
 
-from commands_all import *
-
+from commands_music import *
+from commands_misc import *
 
 class Command:
     def __init__(self,cmd,type,subtype):
@@ -58,18 +58,18 @@ class Help:
 def get_commands():
         pass
 
-media = [stfu,idontcare,nobodyasked,lmao,zook,nofucks,ugh,bullied,
-zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
-begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984]
+#media = [stfu,idontcare,nobodyasked,lmao,zook,nofucks,ugh,bullied,
+#zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
+#begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984]
 
 
-help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
-                     ['Media','Reaction images and videos.'],
-                     ['Misc',"Other random garbage."]],
+#help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
+#                     ['Media','Reaction images and videos.'],
+#                     ['Misc',"Other random garbage."]],
 
-                     [kira,napkin,neitzsche,space,penis],
-                     media,
-                     [hello,say,mock,wide,thicc,smol,aussie,leet])
+#                     [kira,napkin,neitzsche,space,penis],
+#                     media,
+#                     [hello,say,mock,wide,thicc,smol,aussie,leet])
 
 
 @client.command()
