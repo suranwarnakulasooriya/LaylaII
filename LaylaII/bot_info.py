@@ -14,6 +14,8 @@ class Bot_Info:
         self.owner = owner
         self.connected = False
         self.playtime = 0
+        self.async_tasks = []
+        self.playing = False
 
 class Reactions(Cog):
     def __init__(self, client):
@@ -95,6 +97,9 @@ class Queue:
     self.queue = []
     self.loop_s = False
     self.loop_q = False
+    self.current = 0
+    self.save = 0
+    self.song = None
   def maxed(self,index=False):
     if index or index == 0: i = index
     else: i = len(self.queue)
