@@ -9,4 +9,4 @@ async def on_ready():
     print('\nLayla II is online.\n')
 
 if __name__ == '__main__':
-    client.run(Bot.token)
+    client.run(Bot.token)    

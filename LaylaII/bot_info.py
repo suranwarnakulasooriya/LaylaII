@@ -48,8 +48,7 @@ class Embeds:
         return emb
 
     def hello(self):
-        emb = discord.Embed(title="Hi there hello.",
-        description="I'm alive.", color=0xb07bff)
+        emb = discord.Embed(title="Hi there hello.", color=0xb07bff)
         return emb
 
     def confirm(self):
@@ -81,11 +80,12 @@ def withrepr(reprfun):
     return _wrap
 
 class Song:
-  def __init__(self,title,url,length,request):
+  def __init__(self,title,url,length,request,rawtime):
     self.title = title
     self.url = url
     self.length = length
     self.request = request
+    self.rawtime = rawtime
   def __repr__(self):
     return f"{self.title} : {self.url} : {self.length}"
 
@@ -149,3 +149,29 @@ with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f:
     bot_token = f.read()
 bot_owner = 640303674895368194
 Q = Queue(14)
+
+import time
+
+class Stopwatch:
+    def __init__(self):
+        self.start = 0
+        self.suspend = 0
+        self.downtime = 0
+        self.paused = False
+    def Start(self):
+        if not self.paused: self.start = time.time()
+    def Pause(self):
+        if not self.paused: self.suspend = time.time(); self.paused = True
+    def Resume(self):
+        if self.paused:
+            self.downtime += time.time()-self.suspend
+            self.suspend = 0; self.paused = False
+    def GetTime(self):
+        return int(time.time()-self.downtime-self.start)
+    def Reset(self):
+        self.start = 0
+        self.suspend = 0
+        self.downtime = 0
+        self.paused = False
+
+stopwatch = Stopwatch()
