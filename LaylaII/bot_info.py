@@ -95,8 +95,7 @@ class Queue:
     # idk what the maxL should be, groovy had 10, id say 10-15
     self.maxL = maxL
     self.queue = []
-    self.loop_s = False
-    self.loop_q = False
+    self.loop = False
     self.current = 0
     self.save = 0
     self.song = None
