@@ -153,10 +153,8 @@ async def next(ctx):
 @client.command(aliases=['r','rm','rmv','re','rem'],pass_context=True)
 async def remove(ctx,index:int):
     try:
-        if index != 0:
-            song = Q.queue.pop(index)
-            await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}", color=0x99a3a4))
-        else: await ctx.send(embed=discord.Embed(description=f"Cannot remove index 0, use `{Bot.prefix}next`.", color=0xe74c3c))
+        song = Q.queue.pop(index)
+        await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}", color=0x99a3a4))
     except: await ctx.send(embed=discord.Embed(description="There's no song at that index.", color=0xe74c3c))
 
 
