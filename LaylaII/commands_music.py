@@ -80,16 +80,22 @@ async def play(ctx, *, query : str):
             dur = get_time(duration)
 
             # flavor text
-            if len(Q.queue) > 0:
-                await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
-            else:
+            if len(Q.queue) > 0 and Q.current != len(Q.queue)-1:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
-            stopwatch.Start()
+                Q.current += 1
+                stopwatch.Start()
+            elif len(Q.queue) == Q.current == 0:
+                await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
+                stopwatch.Start()
+            else:
+                await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
+
 
             Q.queue.append(Song(title,url,dur,ctx.author.mention,duration)) # add song to queue
 
-            try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e: ctx.guild.voice_client.pause()) # play song
-            except: pass
+            if Q.current == len(Q.queue)-1:
+                try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e: ctx.guild.voice_client.pause()) # play song
+                except: pass
 
 
 @withrepr(lambda x: 'Show the queue.')
@@ -98,6 +104,8 @@ async def queue(ctx):
     message = "```"
     for i,song in enumerate(Q.queue):
       message += f"\n{i}) {song.title}  {song.length}"
+      if i == Q.current:
+        message += ' <=='
     if Q.loop: message += "\nThe current song is being looped."
     message += '```'
     if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
@@ -156,10 +164,10 @@ async def next(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
     voice.stop(); stopwatch.Reset()
     if not Q.loop:
-        if len(Q.queue) > 0: Q.queue.pop(0)
+        Q.current += 1
     try:
-        ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[0].url, **FFMPEG_OPTS))
-        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[0].title} [{Q.queue[0].length}] [{Q.queue[0].request}]",color=0x99a3a4))
+        ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS))
+        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x99a3a4))
         stopwatch.Start()
     except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=0xe74c3c))
 
@@ -168,10 +176,13 @@ async def next(ctx):
 @client.command(aliases=['r','rm','rmv','re','rem'],pass_context=True)
 async def remove(ctx,index:int):
     try:
-        if index == 0 or (index == -1 and len(Q.queue) == 1):
-            if Q.loop: Q.loop = False
-        song = Q.queue.pop(index)
-        await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=0x99a3a4))
+        if index != Q.current:
+            #if Q.loop: Q.loop = False
+            song = Q.queue.pop(index)
+            if index < Q.current: Q.current -= 1
+            await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=0x99a3a4))
+        else:
+            await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=0xe74c3c))
     except: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
 
@@ -179,6 +190,7 @@ async def remove(ctx,index:int):
 @client.command(aliases=['cl','c'],pass_context=True)
 async def clear(ctx):
     Q.queue = []
+    Q.current = 0
     await ctx.send(embed=discord.Embed(description="Queue has been cleared.",color=0x99a3a4))
 
 
@@ -190,11 +202,11 @@ async def loop(ctx):
 
 
 @withrepr(lambda x: "Check what's playing.")
-#@client.command(aliases=['nowplaying'],pass_context=True)
+@client.command(aliases=['nowplaying'],pass_context=True)
 async def np(ctx):
     if len(Q.queue) == 0:
         await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
-    elif stopwatch.GetTime() >= Q.queue[0].rawtime:
+    elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime:
         await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
     else:
-        await ctx.send(embed=discord.Embed(description=f"{Q.queue[0].title} [{get_time(stopwatch.GetTime())}/{Q.queue[0].length}]",color=0x99a3a4))
+        await ctx.send(embed=discord.Embed(description=f"{Q.queue[Q.current].title} [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]",color=0x99a3a4))
