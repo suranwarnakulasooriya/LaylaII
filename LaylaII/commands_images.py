@@ -165,3 +165,9 @@ async def fail(ctx):
 @client.command()
 async def l1984(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/844675006955913277/882426604381405234/unknown.png")
+
+# command ungovernable
+@withrepr(lambda x: 'become ungovernable')
+@client.command()
+async def ungovernable(ctx):
+    await ctx.send("https://cdn.discordapp.com/attachments/820134384945332244/882580276637753364/image0.jpg")
