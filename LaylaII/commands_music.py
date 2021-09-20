@@ -207,10 +207,31 @@ async def np(ctx):
     elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime:
         await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
     else:
-        await ctx.send(embed=discord.Embed(description=f"{Q.queue[Q.current].title} [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]",color=0x99a3a4))
+        p = int(stopwatch.GetTime()/Q.queue[Q.current].rawtime*25)
+        bar = '▬'*p
+        bar += ':purple_circle:'
+        bar += '▬'*(25-p)
+        await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]\n
+        {bar}""",color=0x99a3a4))
 
 @withrepr(lambda x: "Manually set the current song if it isn't correct.")
 @client.command(pass_context=True)
 async def setcurrent(ctx,index:int):
     if index < len(Q.queue): Q.current = index
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+
+@withrepr(lambda x: "Lists all of the problems you may encounter with these commands.")
+@client.command(pass_context=True)
+async def disclaimer(ctx):
+    embed = discord.Embed(title='DISCLAIMER',description="""The music commands are subjects to bugs that are outside of Suran's control. Here's how to get around them.\n
+    If the bot says it started playing something but there's no audio, wait a little longer, the time it takes to begin streaming audio varies.
+    If the audio never starts, requeue the song and skip to it (.next).\n
+    Sometimes the audio prematurely cuts off, clear the queue (.clear) and add the song back.\n
+    Sometimes the current song (marked by <== when .queue is called) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
+    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.""",color=0xb07bff)
+    embed.set_footer(text='Always remember: this bot is better than Rythm.')
+    await ctx.send(embed=embed)
+
+@client.command()
+async def b(ctx):
+    await ctx.send(embed=discord.Embed(description=':purple_circle:'))

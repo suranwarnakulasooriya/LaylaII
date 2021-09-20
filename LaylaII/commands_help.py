@@ -54,7 +54,7 @@ class Help:
         embed.set_author(name="To fill the void in our hearts left by Groovy.")
 
         for cmd in music:
-            embed.add_field(name=cmd.name,value=cmd,inline=False)
+            embed.add_field(name=cmd.name,value=cmd,inline=True)
 
         embed.set_footer(text="If a song doesn't play or the queue is out of wack, clear the queue.")
 
@@ -69,7 +69,7 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      [stfu,idontcare,nobodyasked,lmao,zook,nofucks,ugh,bullied,
                      zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
                      begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
-                     [play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
+                     [disclaimer,play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
                      [hello,say,mock,wide,thicc,smol,aussie,leet])
 
 

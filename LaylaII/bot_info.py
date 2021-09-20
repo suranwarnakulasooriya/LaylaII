@@ -45,7 +45,7 @@ class Song:
   def __init__(self,title,url,length,request,rawtime):
     self.title = title # title of youtube video
     self.url = url # url for ffmpeg to use
-    self.length = length # song in hh:mm:ss
+    self.length = length # length in hh:mm:ss
     self.request = request # the user who requested the song
     self.rawtime = rawtime # duration in seconds
   def __repr__(self):
@@ -72,7 +72,10 @@ class Stopwatch: # for np
             self.downtime += time.time()-self.suspend
             self.suspend = 0; self.paused = False
     def GetTime(self): # elapsed time is the time since the song started minus the downtime
-        return int(time.time()-self.downtime-self.start)
+        downtime = self.downtime
+        if self.paused:
+            downtime += time.time()-self.suspend
+        return int(time.time()-downtime-self.start)
     def Reset(self): # reset when song ends
         self.start = 0
         self.suspend = 0
