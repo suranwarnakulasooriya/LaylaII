@@ -2,6 +2,8 @@
 # music
 # ==============================================================================
 
+from init import *
+
 # set ytdl and ffmpeg options
 ydl_opts = {
 'format': 'bestaudio/best',
@@ -26,6 +28,8 @@ def get_time(sec): # convert time from raw seconds into human time
     for i in range(len(dur)):
         if dur[-i] == '.':
             dur = dir[:i-1]; break
+    if len(dur) == 1: dur = '0:0'+dur
+    elif len(dur) == 2: dur = '0:'+dur
     return dur
 
 
@@ -189,7 +193,6 @@ async def loop(ctx):
     if Q.loop: Q.loop = False; await ctx.send(embed=discord.Embed(description='Loop stopped.',color=0x99a3a4))
     else: Q.loop = True; await ctx.send(embed=discord.Embed(description='Now looping current song.',color=0x99a3a4))
 
-
 @withrepr(lambda x: "See the current song.")
 @client.command(aliases=['nowplaying'],pass_context=True)
 async def np(ctx):
@@ -222,7 +225,3 @@ async def disclaimer(ctx):
     As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.""",color=0xb07bff)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)
-
-@client.command()
-async def b(ctx):
-    await ctx.send(embed=discord.Embed(description=':purple_circle:'))
