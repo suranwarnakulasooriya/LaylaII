@@ -8,20 +8,7 @@ from init import *
 @withrepr(lambda x: 'check the aliveness of the bot')
 @client.command()
 async def hello(ctx):
-    await ctx.send(embed=embeds.hello())
-
-# command die
-'''
-@client.command()
-async def die(ctx):
-    if ctx.message.author.id == Bot.owner:
-        msg = await ctx.message.channel.send(embed=embeds.kill())
-        sys.exit()
-        #await client.add_reaction(msg,'\U0001f44d')
-        #await ctx.send(embed=embeds.kill()); sys.exit()
-    else:
-        await ctx.send(embed=embeds.deny())
-'''
+    await ctx.send(embed=discord.Embed(title='Hi there hello.',color=0xb07bff))
 
 # command forcequit
 @client.command()
@@ -85,8 +72,7 @@ thiccDicct = {
 'x':'乂',
 'y':'丫',
 'z':'乙',
-' ':'　'
-}
+' ':'　'}
 
 @withrepr(lambda x: 'make text look 乚工长乇　丅卄工丂')
 @client.command()
@@ -152,8 +138,7 @@ aussieDict = {
 'W':'M',
 'X':'X',
 'Y':'λ',
-'Z':'Z',
-}
+'Z':'Z',}
 
 @withrepr(lambda x: 'make text look sᴉɥʇ ǝʞᴉlˢ')
 @client.command()
@@ -219,8 +204,7 @@ smolDict = {
 'W':'ᵂ',
 'X':'ˣ',
 'Y':'ʸ',
-'Z':'ᶻ',
-}
+'Z':'ᶻ',}
 
 @withrepr(lambda x: 'make text look ˡᶦᵏᵉ ᵗʰᶦˢ')
 @client.command()
@@ -243,8 +227,7 @@ leetDict = {
 'r':'Я',
 's':'5',
 't':'7',
-'z':'2',
-}
+'z':'2',}
 
 @withrepr(lambda x: 'make text look 1ik3 7#i5')
 @client.command()
@@ -257,8 +240,3 @@ async def leet(ctx, *, msg):
         except KeyError:
             r += i
     await ctx.send(r)
-
-# command help
-#@client.command()
-#async def help(ctx):
-#    await ctx.send('no fuck you')

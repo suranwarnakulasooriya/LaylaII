@@ -2,58 +2,21 @@
 # config file
 # ==============================================================================
 
-import discord
+import discord # discord.py
 from discord.ext import commands
 from discord.ext.commands import Cog
-import sys
+import sys # to kill code
+import functools # for help command
+from youtube_dl import YoutubeDL # to search YouTube
+from discord import FFmpegPCMAudio # to stream audio
+from datetime import timedelta as td # for music duration
+import time
 
 class Bot_Info:
-    def __init__(self,prefix,token,owner):
+    def __init__(self,prefix,token):
         self.prefix = prefix
         self.token = token
-        self.owner = owner
         self.connected = False
-        self.playtime = 0
-        self.async_tasks = []
-        self.playing = False
-
-class Reactions(Cog):
-    def __init__(self, client):
-        self.client = client
-
-    @Cog.listener()
-    async def on_reaction_add(self,reaction,user):
-        print(f'{user.display_name} reacted with {reaction.emoji.name}')
-
-class Embeds:
-    def __init__(self):
-        pass
-
-    def embed(self,title,content,color):
-        return discord.Embed(title=title,description=content,color=color)
-
-    def deny(self):
-        emb = discord.Embed(title="Command Denied.",
-        description="You aren't Suran.", color=0xe74c3c)
-        return emb
-
-    def error(self):
-        emb = discord.Embed(title="Command Failed.",
-        description="Oops, Suran cocked up and the command didnt work.", color=0xe74c3c)
-        return emb
-
-    def kill(self):
-        emb = discord.Embed(title="Kill Confirmed.",
-        description="Aight imma head out.", color=0x2ecc71)
-        return emb
-
-    def hello(self):
-        emb = discord.Embed(title="Hi there hello.", color=0xb07bff)
-        return emb
-
-    def confirm(self):
-        emb = discord.Embed(title="Are you sure?",color=0xe74c3c)
-        return emb
 
 class Copypastas:
     def __init__(self):
@@ -62,8 +25,7 @@ class Copypastas:
         self.neitzsche = "God is dead. God remains dead. And we have killed him. How shall we comfort ourselves, the murderers of all murderers? What was holiest and mightiest of all that the world has yet owned has bled to death under our knives? Who will wipe this blood off us? What water is there for us to clean ourselves? What festivals of atonement, what sacred games shall we have to invent? Is not the greatness of this deed too great for us? Must we ourselves not become gods simply to appear worthy of it?"
         self.space = "​\n"*50
 
-import functools
-
+# to get the name and description of a function for the help command, __doc__ returns the doc of @client.command()
 class reprwrapper(object):
     def __init__(self, repr, func):
         self._repr = repr
@@ -81,82 +43,25 @@ def withrepr(reprfun):
 
 class Song:
   def __init__(self,title,url,length,request,rawtime):
-    self.title = title
-    self.url = url
-    self.length = length
-    self.request = request
-    self.rawtime = rawtime
+    self.title = title # title of youtube video
+    self.url = url # url for ffmpeg to use
+    self.length = length # song in hh:mm:ss
+    self.request = request # the user who requested the song
+    self.rawtime = rawtime # duration in seconds
   def __repr__(self):
     return f"{self.title} : {self.url} : {self.length}"
 
-# make a queue attribute in the Bot class that is the Queue class to gain access to ctx
 class Queue:
-  def __init__(self,maxL):
-    # idk what the maxL should be, groovy had 10, id say 10-15
-    self.maxL = maxL
-    self.queue = []
-    self.loop = False
-    self.current = 0
-    self.save = 0
-    self.song = None
-  def maxed(self,index=False):
-    if index or index == 0: i = index
-    else: i = len(self.queue)
-    if i > self.maxL or i < 0: return True
-    else: return False
-  async def play(self):
-    # play self.queue[0]
-    await ctx.send(f"Now playing: `{self.queue[0].title}`.")
-  async def add_song(self,song):
-    if not self.maxed(): self.queue.append(song)
-    else: await ctx,send('Queue maxed out.')
-  async def remove_song(self,index):
-    if maxed(index): await ctx.send("There's no song with that index")
-    else:
-      if index == 0: self.skip(True) # if index is [0] just skip it and delete
-      else: self.queue.pop(index)
-  def skip(self,delete=False): # also used to transition to next song
-    if (not self.loop_s or not self.loop_q) or delete:
-      self.queue.pop(0)
-      # delete exists if the current song is being deleted while on loop
-      # stop voice and play next song
-    else: pass # stop voice and play next song, but keep queue[0]
+  def __init__(self):
+    self.queue = [] # list of Song objects
+    self.loop = False # bool of whether the current song is looping or not
+    self.current = 0 # index of current song in Q.queue
 
-  async def jump(self,index):
-    if maxed(index): await ctx.send("There's no song with that index")
-    else:
-      self.queue = self.queue[index:]
-      # stop voice and play next song
-  async def np(self):
-    time = 0#get time elapsed
-    await ctx.send(f"{time}/{self.queue[0].length}")
-  async def display(self):
-    message = ""
-    for i,song in enumerate(self.queue):
-      message += f"\n{i}) {song.title}  {song.length}"
-    if self.loop_s: message += "\nThe current song is being looped."
-    if self.loop_q: message += "\mThe queue is being looped."
-    await ctx.send(message)
-  def loop_song(self):
-    if self.loop_s: self.loop_s = False
-    else: self.loop_s = True
-  def loop_queue(self):
-    if self.loop_q: self.loop_q = False
-    else: self.loop_q = True
-
-bot_prefix = "."
-with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f:
-    bot_token = f.read()
-bot_owner = 640303674895368194
-Q = Queue(14)
-
-import time
-
-class Stopwatch:
+class Stopwatch: # for np
     def __init__(self):
-        self.start = 0
-        self.suspend = 0
-        self.downtime = 0
+        self.start = 0 # when song begins
+        self.suspend = 0 # when paused
+        self.downtime = 0 # total amount of time spent paused
         self.paused = False
     def Start(self):
         if not self.paused: self.start = time.time()
@@ -166,12 +71,10 @@ class Stopwatch:
         if self.paused:
             self.downtime += time.time()-self.suspend
             self.suspend = 0; self.paused = False
-    def GetTime(self):
+    def GetTime(self): # elapsed time is the time since the song started minus the downtime
         return int(time.time()-self.downtime-self.start)
-    def Reset(self):
+    def Reset(self): # reset when song ends
         self.start = 0
         self.suspend = 0
         self.downtime = 0
         self.paused = False
-
-stopwatch = Stopwatch()

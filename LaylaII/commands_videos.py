@@ -5,8 +5,6 @@
 from init import *
 
 
-# command reality
-
 # command stfu
 @withrepr(lambda x: "please stfu")
 @client.command()

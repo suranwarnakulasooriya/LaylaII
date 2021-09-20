@@ -10,7 +10,7 @@ from init import *
 async def zook(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/826545975811899472/829041816141299776/mLdxBEK.png")
 
-# command
+# command nofucks
 @withrepr(lambda x: 'none at all')
 @client.command()
 async def nofucks(ctx):
@@ -40,6 +40,7 @@ async def bullied(ctx):
 async def zook2(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/694914252556992553/819028740852023386/image0.png")
 
+# command anythingelse
 @withrepr(lambda x: 'anything?')
 @client.command()
 async def anythingelse(ctx):
@@ -141,25 +142,25 @@ async def wth(ctx):
 async def dildo(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/819019559888748584/844013492717223956/efcoiawmbjz61.webp")
 
-# command
+# command cirucs
 @withrepr(lambda x: 'why dont you join the circus')
 @client.command()
 async def circus(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/704351868322578503/847934935004479518/Screen_Shot_2021-05-28_at_4.30.33_PM.png")
 
-# command
+# command ymir
 @withrepr(lambda x: 'ymir is feeling every negative emotion rn')
 @client.command()
 async def ymir(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/704352225492729936/771502236706406420/ymir.png")
 
-# command
+# command fail
 @withrepr(lambda x: 'task failed successfully')
 @client.command()
 async def fail(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/843627992286101535/845111419446886400/unknown.png")
 
-# command
+# command l1984
 @withrepr(lambda x: 'literally 1984')
 @client.command()
 async def l1984(ctx):
