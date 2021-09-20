@@ -2,15 +2,6 @@
 # music
 # ==============================================================================
 
-from init import *
-
-from youtube_dl import YoutubeDL # to search YouTube
-
-from discord import FFmpegPCMAudio # to stream audio
-
-# for music duration
-from datetime import timedelta as td
-
 # set ytdl and ffmpeg options
 ydl_opts = {
 'format': 'bestaudio/best',
