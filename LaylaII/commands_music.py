@@ -75,11 +75,10 @@ async def play(ctx, *, query : str):
             dur = get_time(duration)
 
             # flavor text
-            if len(Q.queue) > 0 and Q.current != len(Q.queue)-1:
-                await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
-                Q.current += 1
-                stopwatch.Start()
-            elif len(Q.queue) == Q.current == 0:
+            #if len(Q.queue) > 0 and Q.current != len(Q.queue)-1:
+            #    await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
+            #    stopwatch.Start()
+            if len(Q.queue) == Q.current == 0:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
                 stopwatch.Start()
             else:
@@ -107,7 +106,7 @@ async def queue(ctx):
 
 
 @withrepr(lambda x: 'Join the voice channel of the author. Aliases = j.')
-#@client.command(aliases=['j'],pass_context=True)
+@client.command(aliases=['j'],pass_context=True)
 async def join(ctx):
     if not Bot.connected and ctx.author.voice:
         channel = ctx.author.voice.channel
@@ -172,7 +171,7 @@ async def remove(ctx,index:int):
     try:
         if index != Q.current:
             song = Q.queue.pop(index)
-            if index < Q.current: Q.current -= 1
+            if index < Q.current and index >= 0: Q.current -= 1
             await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=0x99a3a4))
         else:
             await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=0xe74c3c))
@@ -211,17 +210,20 @@ async def np(ctx):
 @withrepr(lambda x: "Manually set the current song if it isn't correct.")
 @client.command(pass_context=True)
 async def setcurrent(ctx,index:int):
-    if index < len(Q.queue): Q.current = index
+    if index < len(Q.queue):
+        Q.current = index
+        await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
-@withrepr(lambda x: "Lists all of the problems you may encounter with these commands.")
+@withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)
-async def disclaimer(ctx):
-    embed = discord.Embed(title='DISCLAIMER',description="""The music commands are subjects to bugs that are outside of Suran's control. Here's how to get around them.\n
-    If the bot says it started playing something but there's no audio, wait a little longer, the time it takes to begin streaming audio varies.
-    If the audio never starts, requeue the song and skip to it (.next).\n
-    Sometimes the audio prematurely cuts off, clear the queue (.clear) and add the song back.\n
-    Sometimes the current song (marked by <== when .queue is called) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
-    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.""",color=0xb07bff)
+async def readme(ctx):
+    embed = discord.Embed(title='DISCLAIMER',description="""The music commands are subject to bugs that are outside of my control. Here's how to get around them.\n
+    If the bot says it started playing something but there's no audio, wait a little longer, the time it takes to begin streaming audio varies. If the audio never starts, requeue the song and skip to it (.next).\n
+    Sometimes the audio prematurely cuts off, this might be because the video is buffering, so wait for a little bit. If the song doesn't continue, requeue the song and skip to it.\n
+    Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
+    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
+    .remove -1 is the fastest way to remove the last song in the queue.
+    Please don't disconnect the bot from voice. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.""",color=0xb07bff)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)
