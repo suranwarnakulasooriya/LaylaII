@@ -8,3 +8,4 @@ from commands_misc import *
 from commands_images import *
 from commands_videos import *
 from commands_music import *
+from commands_ranking import *

@@ -15,3 +15,4 @@ Bot = Bot_Info(bot_prefix,bot_token)
 
 activity = discord.Activity(name='your every move', type=discord.ActivityType.watching)
 client = commands.Bot(command_prefix=Bot.prefix,help_command=None)
+client.add_cog(Log(client,Bot))

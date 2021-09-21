@@ -12,11 +12,40 @@ from discord import FFmpegPCMAudio # to stream audio
 from datetime import timedelta as td # for music duration
 import time
 
+#with open("cooldown.txt",'r') as f:
+#    Cooldown = int(f.readline())
+
+
 class Bot_Info:
     def __init__(self,prefix,token):
         self.prefix = prefix
         self.token = token
         self.connected = False
+        with open("cooldown.txt",'r') as f:
+            self.cooldown = int(f.readline())
+
+class Log(Cog):
+    def __init__(self,bot,obj):
+        self.bot = bot
+        self.obj = obj
+
+    @Cog.listener()
+    async def on_reaction_add(self,reaction,user):
+        print(f"i saw that {user} dumbass react with{reaction.emoji}")
+
+    @Cog.listener()
+    async def on_member_join(member):
+        if member not in U:
+            U[member] = User(member.id)
+
+    @Cog.listener("on_message")
+    async def on_message(self,message):
+        if not message.author.bot:
+            if U[message.author.id].valid(self.obj.cooldown):
+                U[message.author.id].xp += 1
+                if U[message.author.id].lvlup():
+                    await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}.",color=message.author.color))
+
 
 class Copypastas:
     def __init__(self):
@@ -57,7 +86,7 @@ class Queue:
     self.loop = False # bool of whether the current song is looping or not
     self.current = 0 # index of current song in Q.queue
 
-class Stopwatch: # for np
+class Stopwatch: # for np and ranking
     def __init__(self):
         self.start = 0 # when song begins
         self.suspend = 0 # when paused
@@ -81,3 +110,31 @@ class Stopwatch: # for np
         self.suspend = 0
         self.downtime = 0
         self.paused = False
+
+class User:
+    def __init__(self,id):
+        self.id = id
+        self.xp = 0 # total xp
+        self.lvl = 0
+        self.nxp = 0 # xp gained after last lvl up
+        self.clock = Stopwatch()
+        self.clock.Start()
+    def valid(self,cd):
+        if int(time.time()-self.clock.start) >= cd:
+            self.clock.Reset()
+            self.clock.Start()
+            return True
+        else: return False
+    def lvlup(self):
+        if self.nxp >= 5*(self.lvl+1):
+            self.lvl += 1
+            self.nxp = 0
+            # code to assign a new role would go here
+            return True
+        else:
+            self.nxp += 1
+            return False
+
+U = {640303674895368194:User(640303674895368194)} # dict of users being tracked {user id:User obj}
+
+main_guild = 724273043886833736

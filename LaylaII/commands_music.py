@@ -224,6 +224,7 @@ async def readme(ctx):
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
     As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
     .remove -1 is the fastest way to remove the last song in the queue.
-    Please don't disconnect the bot from voice. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.""",color=0xb07bff)
+    Please don't disconnect the bot from voice. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.
+    I would also advice against sending commands in quick succession, just to be safe.""",color=0xb07bff)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)
