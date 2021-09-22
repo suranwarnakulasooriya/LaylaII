@@ -37,11 +37,12 @@ class Log(Cog):
     @Cog.listener("on_message")
     async def on_message(self,message):
         if not message.author.bot:
-            if U[message.author.id].valid(self.obj.cooldown):
+            if message.author.id not in U:
+                U[message.author.id] = User(message.author.id)
+            elif U[message.author.id].valid(self.obj.cooldown):
                 U[message.author.id].xp += 1
                 if U[message.author.id].lvlup():
-                    await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}.",color=message.author.color))
-
+                    await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{5*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
 
 class Copypastas:
     def __init__(self):
@@ -122,7 +123,7 @@ class User:
             return True
         else: return False
     def lvlup(self):
-        if self.nxp >= 5*(self.lvl+1):
+        if self.nxp >= 5*(self.lvl+1)-1:
             self.lvl += 1
             self.nxp = 0
             # code to assign a new role would go here
@@ -131,6 +132,6 @@ class User:
             self.nxp += 1
             return False
 
-U = {} # dict of users being tracked {user id:User obj}
+U = {640303674895368194:User(640303674895368194)} # dict of users being tracked {user id:User obj}
 
-main_guild = 0
+main_guild = 724273043886833736
