@@ -4,10 +4,6 @@
 
 from init import *
 
-
-
-
-
 @withrepr(lambda x: 'See your rank in this server.')
 @client.command()
 async def rank(ctx):
