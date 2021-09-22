@@ -12,10 +12,6 @@ from discord import FFmpegPCMAudio # to stream audio
 from datetime import timedelta as td # for music duration
 import time
 
-#with open("cooldown.txt",'r') as f:
-#    Cooldown = int(f.readline())
-
-
 class Bot_Info:
     def __init__(self,prefix,token):
         self.prefix = prefix
@@ -135,6 +131,6 @@ class User:
             self.nxp += 1
             return False
 
-U = {640303674895368194:User(640303674895368194)} # dict of users being tracked {user id:User obj}
+U = {} # dict of users being tracked {user id:User obj}
 
-main_guild = 724273043886833736
+main_guild = 0
