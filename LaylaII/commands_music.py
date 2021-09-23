@@ -203,9 +203,7 @@ async def np(ctx):
         await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
     else:
         p = int(stopwatch.GetTime()/Q.queue[Q.current].rawtime*25)
-        bar = '▬'*p
-        bar += ':purple_circle:'
-        bar += '▬'*(25-p)
+        bar = '▬'*p + ':purple_circle:' + '▬'*(25-p)
         await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]\n
         {bar}""",color=0x99a3a4))
 
