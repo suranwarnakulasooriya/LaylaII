@@ -132,6 +132,4 @@ class User:
             self.nxp += 1
             return False
 
-U = {640303674895368194:User(640303674895368194)} # dict of users being tracked {user id:User obj}
-
-main_guild = 724273043886833736
+U = {} # dict of users being tracked {user id:User obj}
