@@ -96,9 +96,10 @@ async def play(ctx, *, query : str):
 async def queue(ctx):
     message = "```"
     for i,song in enumerate(Q.queue):
-      message += f"\n{i}) {song.title}  {song.length}"
-      if i == Q.current:
-        message += ' <=='
+        if i == Q.current:
+            message += f"\n{i}) {song.title}  {get_time(song.rawtime-stopwatch.GetTime())} <=="
+        else:
+            message += f"\n{i}) {song.title}  {song.length}"
     if Q.loop: message += "\nThe current song is being looped."
     message += '```'
     if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
