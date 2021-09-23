@@ -80,14 +80,15 @@ async def play(ctx, *, query : str):
             #    stopwatch.Start()
             if len(Q.queue) == Q.current == 0:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
-                stopwatch.Start()
+                stopwatch.Reset(); stopwatch.Start()
+                Q.loop = False
             else:
                 await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
 
             Q.queue.append(Song(title,url,dur,ctx.author.mention,duration)) # add song to queue
 
             if Q.current == len(Q.queue)-1:
-                try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e: ctx.guild.voice_client.pause()) # play song
+                try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS)) # play song
                 except: pass
 
 
@@ -162,7 +163,7 @@ async def next(ctx):
     try:
         ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS))
         await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
-        stopwatch.Start()
+        stopwatch.reset(); stopwatch.Start()
     except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=0xe74c3c))
 
 
