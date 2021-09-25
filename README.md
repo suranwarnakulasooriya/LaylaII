@@ -9,6 +9,6 @@ Onto ranking, the bot is designed with a single server in mind and so cannot log
 
 The bot has other extraneous commands that I added for fun, including text manipulation, copypastas, and reaction images/videos. These commands (along with the music and ranking commands) are kept in separate Python files that are imported into commands_all.py (which is then imported into main.py), so you can edit commands_all.py to add/remove groups of commands that you do not want. 
 
-The init.py file reads a local txt file to obtain the token. If you want to plug this code into your bot, make a txt file with your token and read from it in init.py. Then run main.py to run your bot. There are many resources to help you set up a bot with Discord's developer API.
+The init.py file reads a local txt file to obtain the token. If you want to plug this code into your bot, make a txt file with your token and read from it in bot_info.py. Then run main.py to run your bot. There are many resources to help you set up a bot with Discord's developer API.
 
 If you happen to find this GitHub page, you are free to do whatever you wish with my code. This is a project that I took on to kill time and get better at Python,  so I don't care about what you do with it. Read the MIT license for the specifics.
