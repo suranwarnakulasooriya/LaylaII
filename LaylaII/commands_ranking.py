@@ -15,15 +15,18 @@ async def rank(ctx):
 async def uh(ctx):
     await ctx.send(ctx.author.id)
 
-@client.command()
+@client.command(aliases=['cool'])
 async def cooldown(ctx,c:int):
     if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
         await ctx.send(embed=discord.Embed(description="Cooldown out of range, give range between 1 and 10.",color=0xe74c3c))
     else:
-        with open("cooldown.txt",'w') as f:
-            f.write(str(c))
-        await ctx.send(embed=discord.Embed(description=f"Cooldown set from {Bot.cooldown} to {c}.",color=0x3ce74c))
-        Bot.cooldown = c
+        if ctx.author.guild_permissions.administrator:
+            with open("cooldown.txt",'w') as f:
+                f.write(str(c))
+            await ctx.send(embed=discord.Embed(description=f"Cooldown set from {Bot.cooldown} to {c}.",color=0x3ce74c))
+            Bot.cooldown = c
+        else:
+            await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
 
 @client.command(aliases=['getcool','getcd'])
 async def getcooldown(ctx):
@@ -52,5 +55,11 @@ async def savedata(ctx):
 
 @client.command()
 async def givelevel(ctx,user:discord.User=None,lvl=0):
-    U[user.id] = User(user.id,Bot,lvl*5,lvl,0)
-    await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*5} xp].",color=0x3ce74c))
+    if ctx.author.guild_permissions.administrator:
+        try:
+            U[user.id] = User(user.id,Bot,lvl*5,lvl,0)
+            await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*5} xp].",color=0x3ce74c))
+        except:
+            await ctx.send(embed=discord.Embed(description="Something went wrong, and it's your fault.",color=0xe74c3c))
+    else:
+        await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
