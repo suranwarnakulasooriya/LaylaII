@@ -20,7 +20,7 @@ def retrieve(arg): # return title, url, and duration of top result of search
     return (info['title'], info['formats'][0]['url'], info['duration'])
 
 
-def get_time(sec): # convert time from raw seconds into human time
+def get_time(sec): # convert time from raw seconds into hh:mm:ss
     dur = str(td(seconds=sec))
     for i in range(len(dur)):
         if dur[i] not in ['0',':']:
@@ -28,6 +28,7 @@ def get_time(sec): # convert time from raw seconds into human time
     for i in range(len(dur)):
         if dur[-i] == '.':
             dur = dir[:i-1]; break
+    # always at least show the single minutes
     if len(dur) == 1: dur = '0:0'+dur
     elif len(dur) == 2: dur = '0:'+dur
     return dur
@@ -93,10 +94,8 @@ async def play(ctx, *, query : str):
 async def queue(ctx):
     message = "```"
     for i,song in enumerate(Q.queue):
-        if i == Q.current:
-            message += f"\n{i}) {song.title}  {get_time(song.rawtime-stopwatch.GetTime())} <=="
-        else:
-            message += f"\n{i}) {song.title}  {song.length}"
+        if i == Q.current: message += f"\n{i}) {song.title}  {get_time(song.rawtime-stopwatch.GetTime())} <=="
+        else: message += f"\n{i}) {song.title}  {song.length}"
     if Q.loop: message += "\nThe current song is being looped."
     message += '```'
     if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
@@ -190,6 +189,7 @@ async def loop(ctx):
     if Q.loop: Q.loop = False; await ctx.send(embed=discord.Embed(description='Loop stopped.',color=0x99a3a4))
     else: Q.loop = True; await ctx.send(embed=discord.Embed(description='Now looping current song.',color=0x99a3a4))
 
+
 @withrepr(lambda x: "See the current song.")
 @client.command(aliases=['nowplaying'],pass_context=True)
 async def np(ctx):
@@ -203,6 +203,7 @@ async def np(ctx):
         await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]\n
         {bar}""",color=0x99a3a4))
 
+
 @withrepr(lambda x: "Manually set the current song if it isn't correct.")
 @client.command(pass_context=True)
 async def setcurrent(ctx,index:int):
@@ -210,6 +211,7 @@ async def setcurrent(ctx,index:int):
         Q.current = index
         await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+
 
 @withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)

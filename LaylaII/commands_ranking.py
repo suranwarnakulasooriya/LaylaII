@@ -22,7 +22,7 @@ async def cooldown(ctx,c:int):
     else:
         if ctx.author.guild_permissions.administrator:
             with open("cooldown.txt",'w') as f:
-                f.write(str(c))
+                f.write(str(c)); f.close()
             await ctx.send(embed=discord.Embed(description=f"Cooldown set from {Bot.cooldown} to {c}.",color=0x3ce74c))
             Bot.cooldown = c
         else:
@@ -48,9 +48,9 @@ async def leaderboard(ctx):
 async def savedata(ctx):
     with open('users.txt','w') as f:
         lines = []
-        for u in U:
-            lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
-        f.writelines(lines)
+        for u in U: lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
+        for line in lines: f.write(line); f.write('\n')
+        f.close()
     await ctx.send(embed=discord.Embed(description="User ranking data has been saved.",color=0x3ce74c))
 
 @client.command()

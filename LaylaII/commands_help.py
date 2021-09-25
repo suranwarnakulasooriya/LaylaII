@@ -2,9 +2,12 @@
 # build help command
 # ==============================================================================
 
-from commands_all import *
+from commands_media import *
+from commands_music import *
+from commands_ranking import *
+from commands_misc import *
 
-class Help:
+class Help: # class with all help panels
     def __init__(self,cmd_types,cpp,media,music,misc):
         self.cmd_types = cmd_types
 
@@ -16,7 +19,7 @@ class Help:
 
         self.embed = embed
 
-        ###
+        # copypastas
 
         embed = discord.Embed()
         embed.set_author(name="All the copypastas.")
@@ -26,7 +29,7 @@ class Help:
 
         self.help_cpp = embed
 
-        ###
+        # media
 
         embed = discord.Embed()
         embed.set_author(name="Reaction images and videos.")
@@ -38,7 +41,7 @@ class Help:
 
         self.help_media = embed
 
-        ###
+        # misc
 
         embed = discord.Embed()
         embed.set_author(name="Other garbage I can do.")
@@ -48,7 +51,7 @@ class Help:
 
         self.help_misc = embed
 
-        ###
+        # music
 
         embed = discord.Embed()
         embed.set_author(name="To fill the void in our hearts left by Groovy.")
@@ -60,7 +63,7 @@ class Help:
 
         self.help_music = embed
 
-
+# create help panels first
 help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      ['Media','Reaction images and videos.'],
                      ['Music','RIP Groovy.'],
@@ -72,18 +75,12 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      [readme,play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
                      [hello,say,mock,wide,thicc,smol,aussie,leet])
 
-
 @client.command()
 async def help(ctx,*,arg=''):
-    if arg == '':
-        await ctx.send(embed=help_command_.embed)
-    elif arg == 'copypastas':
-        await ctx.send(embed=help_command_.help_cpp)
-    elif arg == 'media':
-        await ctx.send(embed=help_command_.help_media)
-    elif arg == 'misc':
-        await ctx.send(embed=help_command_.help_misc)
-    elif arg == 'music':
-        await ctx.send(embed=help_command_.help_music)
+    if arg == '': await ctx.send(embed=help_command_.embed)
+    elif arg == 'copypastas': await ctx.send(embed=help_command_.help_cpp)
+    elif arg == 'media': await ctx.send(embed=help_command_.help_media)
+    elif arg == 'misc': await ctx.send(embed=help_command_.help_misc)
+    elif arg == 'music': await ctx.send(embed=help_command_.help_music)
     else:
-        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valied categories are copypastas, media, music, and misc.'))
+        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valid categories are copypastas, media, music, and misc.'))
