@@ -74,10 +74,6 @@ async def play(ctx, *, query : str):
             title, url, duration = retrieve(query)
             dur = get_time(duration)
 
-            # flavor text
-            #if len(Q.queue) > 0 and Q.current != len(Q.queue)-1:
-            #    await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
-            #    stopwatch.Start()
             if len(Q.queue) == Q.current == 0:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
                 stopwatch.Reset(); stopwatch.Start()

@@ -9,7 +9,7 @@ from init import *
 async def rank(ctx):
     if ctx.author.id in U:
         user = U[ctx.author.id]
-        await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is level {user.lvl} with {user.xp} xp. {user.nxp}/{5*(user.lvl+1)} until level {user.lvl+1}.",color=ctx.author.color))
+        await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate*(user.lvl+1)}] until level {user.lvl+1}.",color=ctx.author.color))
 
 @client.command()
 async def uh(ctx):
@@ -17,7 +17,7 @@ async def uh(ctx):
 
 @client.command()
 async def cooldown(ctx,c:int):
-    if c < 0 or c > 10: # allowing 0 is intentional for debug purposes
+    if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
         await ctx.send(embed=discord.Embed(description="Cooldown out of range, give range between 1 and 10.",color=0xe74c3c))
     else:
         with open("cooldown.txt",'w') as f:
@@ -36,6 +36,21 @@ async def leaderboard(ctx):
         server.append((U[user].id,U[user].xp))
     server = sorted(server,key=lambda x:x[1],reverse=True)[:min(10,len(server))]
     desc = ''
-    for user in server:
-        desc += f'<@!{user[0]}>: level {U[user[0]].lvl}, {user[1]} exp.\n'
-    await ctx.send(embed=discord.Embed(title="Leaderboard",description=desc,color=0xb07bff))
+    for i,user in enumerate(server):
+        desc += f'#{i+1}) <@!{user[0]}>, Level: **{U[user[0]].lvl}**, Xp: {user[1]}\n\n'
+    embed = discord.Embed(title='Leaderboard',description=desc,color=0xb07bff)
+    await ctx.send(embed=embed)
+
+@client.command()
+async def savedata(ctx):
+    with open('users.txt','w') as f:
+        lines = []
+        for u in U:
+            lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
+        f.writelines(lines)
+    await ctx.send(embed=discord.Embed(description="User ranking data has been saved.",color=0x3ce74c))
+
+@client.command()
+async def givelevel(ctx,user:discord.User=None,lvl=0):
+    U[user.id] = User(user.id,Bot,lvl*5,lvl,0)
+    await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*5} xp].",color=0x3ce74c))
