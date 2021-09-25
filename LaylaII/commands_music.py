@@ -12,7 +12,7 @@ ydl_opts = {
     'preferredquality': '192','noplaylist':'True'}]}
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-'options': '-vn'}
+'options': '-y -vn'}
 
 def retrieve(arg): # return title, url, and duration of top result of search
     with YoutubeDL({'format': 'bestaudio', 'noplaylist':'True','cookies':'cookies.txt'}) as ydl:
@@ -74,7 +74,7 @@ async def play(ctx, *, query : str):
             # search youtube for query (searching a url will return the url)
             title, url, duration = retrieve(query)
             dur = get_time(duration)
-
+            FFMPEG_OPTS['options'] = '-vn'
             if len(Q.queue) == Q.current == 0:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
                 stopwatch.Reset(); stopwatch.Start()
@@ -121,7 +121,7 @@ async def leave(ctx):
         await voice.disconnect()
         Bot.connected = False
         Q.queue = []
-        Stopwatch.Reset()
+        #stopwatch.Reset()
     else: await ctx.send(embed=discord.Embed(description='No voice channel to leave from.',color=0xe74c3c))
 
 
@@ -158,7 +158,7 @@ async def next(ctx):
     try:
         ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS))
         await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
-        stopwatch.reset(); stopwatch.Start()
+        stopwatch.Reset(); stopwatch.Start()
     except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=0xe74c3c))
 
 
