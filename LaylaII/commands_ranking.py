@@ -11,10 +11,6 @@ async def rank(ctx):
         user = U[ctx.author.id]
         await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate*(user.lvl+1)}] until level {user.lvl+1}.",color=ctx.author.color))
 
-@client.command()
-async def uh(ctx):
-    await ctx.send(ctx.author.id)
-
 @client.command(aliases=['cool'])
 async def cooldown(ctx,c:int):
     if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
