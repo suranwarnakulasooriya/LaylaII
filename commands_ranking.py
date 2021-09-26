@@ -88,3 +88,22 @@ async def givelevel(ctx,user:discord.User=None,lvl=0):
             await ctx.send(embed=discord.Embed(description="Something went wrong, and it's your fault.",color=0xe74c3c))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
+
+@withrepr(lambda x: 'Change the rate at which users level up.')
+@client.command()
+async def changerate(ctx,rate:int):
+    if ctx.author.guild_permissions.administrator:
+        if rate < 10 or rate > 20:
+            await ctx.send(embed=discord.Embed(description="Rate out of range, pick a range between 10-20",color=0xe74c3c))
+        else:
+            with open('rate.txt','w') as f: f.write(str(rate)); f.close()
+            Bot.rate = rate
+            for user in U: U[user].rate = rate
+            await ctx.send(embed=discord.Embed(description=f"Changed level up rate to {rate}.",color=0x3ce74c))
+    else:
+        await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
+
+@withrepr(lambda x: 'See the current rate.')
+@client.command()
+async def getrate(ctx):
+    await ctx.send(embed=discord.Embed(description=f"Level up rate is currently {Bot.rate} messages.",color=0x99a3a4))
