@@ -32,7 +32,7 @@ from commands_ranking import *
 from commands_misc import *
 
 class Help: # class with all help panels
-    def __init__(self,cmd_types,cpp,media,music,misc):
+    def __init__(self,cmd_types,cpp,media,music,ranking,misc):
         self.cmd_types = cmd_types
 
         embed = discord.Embed()
@@ -44,7 +44,6 @@ class Help: # class with all help panels
         self.embed = embed
 
         # copypastas
-
         embed = discord.Embed()
         embed.set_author(name="All the copypastas.")
 
@@ -54,7 +53,6 @@ class Help: # class with all help panels
         self.help_cpp = embed
 
         # media
-
         embed = discord.Embed()
         embed.set_author(name="Reaction images and videos.")
 
@@ -66,7 +64,6 @@ class Help: # class with all help panels
         self.help_media = embed
 
         # misc
-
         embed = discord.Embed()
         embed.set_author(name="Other garbage I can do.")
 
@@ -76,7 +73,6 @@ class Help: # class with all help panels
         self.help_misc = embed
 
         # music
-
         embed = discord.Embed()
         embed.set_author(name="To fill the void in our hearts left by Groovy.")
 
@@ -87,16 +83,27 @@ class Help: # class with all help panels
 
         self.help_music = embed
 
+        # ranking
+        embed = discord.Embed()
+        embed.set_author(name="Imagine paying money to change the cooldown lmao.")
+
+        for cmd in ranking:
+            embed.add_field(name=cmd.name,value=cmd,inline=True)
+
+        self.help_ranking = embed
+
 # create help panels first
 help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      ['Media','Reaction images and videos.'],
                      ['Music','RIP Groovy.'],
-                     ['Misc',"Other random garbage."]],
+                     ['Ranking','Amari bad.'],
+                     ['Misc','Other random garbage.']],
                      [kira,napkin,neitzsche,space,penis],
                      [stfu,ungovernable,nobodyasked,lmao,zook,nofucks,ugh,bullied,
                      zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
                      begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
                      [readme,play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
+                     [rank,leaderboard,savedata,getcooldown,cooldown,givelevel],
                      [hello,say,mock,wide,thicc,smol,aussie,leet])
 
 @client.command()
@@ -106,5 +113,6 @@ async def help(ctx,*,arg=''):
     elif arg == 'media': await ctx.send(embed=help_command_.help_media)
     elif arg == 'misc': await ctx.send(embed=help_command_.help_misc)
     elif arg == 'music': await ctx.send(embed=help_command_.help_music)
+    elif arg == 'ranking': await ctx.send(embed=help_command_.help_ranking)
     else:
-        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valid categories are copypastas, media, music, and misc.'))
+        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valid categories are copypastas, media, music, and misc.',color=0xe74c3c))
