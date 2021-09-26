@@ -197,17 +197,17 @@ async def setcurrent(ctx,index:int):
         await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
-
 @withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)
 async def readme(ctx):
     embed = discord.Embed(title='DISCLAIMER',description="""The music commands are subject to bugs that are outside of my control. Here's how to get around them.\n
-    If the bot says it started playing something but there's no audio, wait a little longer, the time it takes to begin streaming audio varies. If the audio never starts, requeue the song and skip to it (.next).\n
+    If the bot says it started playing something but there's no audio, wait a little longer, the time it takes to begin streaming audio varies.
+    If the audio never starts, it might have been randomly denied (yes it happens, it should say the song is over in the queue), requeue the song and skip to it (.next).\n
     Sometimes the audio prematurely cuts off, this might be because the video is buffering, so wait for a little bit. If the song doesn't continue, requeue the song and skip to it.\n
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
     As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
     .remove -1 is the fastest way to remove the last song in the queue.
-    Please don't disconnect the bot from voice. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.
-    I would also advice against sending commands in quick succession, just to be safe.""",color=0xb07bff)
+    Please don't disconnect the bot from voice or use music commands in dms. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.
+    I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)
