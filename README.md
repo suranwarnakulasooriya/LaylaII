@@ -12,7 +12,7 @@ The bot has other extraneous commands that I added for fun, including text manip
 ## Using Layla II
 
 ### Install Packages
-A Python interpreter, discord.py, youtube-dl, and ffmpeg are needed to run the bot. The most recent stable version of Python is recommended at https://www.python.org/downloads/. 3.8 is the oldest usable version. discord.py can be installed using `pip` with Rapptz' guide on his page: https://github.com/Rapptz/discord.py. youtube-dl and ffmpeg will have to be installed accoring to your operating system and a `pip install` of these packages may also be necessary.
+A Python interpreter, discord.py, youtube-dl, and ffmpeg are needed to run the bot. The most recent stable version of Python is recommended at https://www.python.org/downloads/. 3.8 is the oldest usable version. discord.py can be installed using `pip` with Rapptz' guide on his page: https://github.com/Rapptz/discord.py. youtube-dl and ffmpeg will have to be installed according to your operating system and a `pip install` of these packages may also be necessary.
 
 ### Create Discord Bot
 To create your bot, go to discord.com/developers and log in to enter the developer portal. Click `New Application` and give it a name. Under application settings, select `Bot` and click `Add Bot`. Here you can give a bot a separate name from the application. Go to `OAuth2` and under scopes select `bot`. You can select the bot's permissions here as well if you like, selecting `Administrator` is usually fine. Copy the OAuth2 URL and enter it in a new tab. This will invite the bot to your server and it will be offline. 
