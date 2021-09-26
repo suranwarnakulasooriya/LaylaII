@@ -63,6 +63,8 @@ class Log(Cog): # cog listeners for ranking
 
     @Cog.listener("on_message")
     async def on_message(self,message):
+        if client.user.mentioned_in(message):
+            await message.channel.send(f"My prefix is `{self.obj.prefix}`")
         if not message.author.bot:
             if message.author.id not in U: U[message.author.id] = User(message.author.id,self.obj)
             elif U[message.author.id].valid(self.obj.cooldown):
@@ -190,8 +192,8 @@ def withrepr(reprfun):
     return _wrap
 
 # initialize Bot object
-bot_prefix = "."
-with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read()
+with open('prefix.txt','r') as f: bot_prefix = f.read(); f.close()
+with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close()
 Bot = Bot_Info(bot_prefix,bot_token)
 
 # initialize dict of user ranking objects
@@ -210,5 +212,5 @@ copypastas = Copypastas()
 
 # initialize Discord client
 activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)
-client = commands.Bot(command_prefix=Bot.prefix,help_command=None)
+client = commands.Bot(command_prefix=bot_prefix,help_command=None)
 client.add_cog(Log(client,Bot))
