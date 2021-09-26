@@ -104,7 +104,7 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
                      [readme,play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
                      [rank,leaderboard,savedata,getcooldown,cooldown,givelevel],
-                     [hello,say,mock,wide,thicc,smol,aussie,leet])
+                     [hello,prefix,say,mock,wide,thicc,smol,aussie,leet])
 
 @client.command()
 async def help(ctx,*,arg=''):
