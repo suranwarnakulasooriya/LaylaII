@@ -295,3 +295,14 @@ async def space(ctx):
 async def penis(ctx):
     await ctx.send('penis')
     await ctx.send(f'hey {ctx.author.mention} why are you looking at penis??')
+
+@withrepr(lambda x: 'Change the prefix (admin only).')
+@client.command()
+async def prefix(ctx,p:str):
+    if ctx.author.guild_permissions.administrator:
+        if 1 <= len(p) <= 6:
+            with open('prefix.txt','w') as f: f.write(p); f.close()
+            client.command_prefix = p
+            await ctx.send(embed=discord.Embed(description=f"Changed prefix to `{p}`",color=0x3ce74c))
+        else: await ctx.send(embed=discord.Embed(description="Prefix not valid. Must be between 1-6 chars.",color=0xe74c3c))
+    else: await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0x3ce74c))
