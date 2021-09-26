@@ -35,6 +35,7 @@ async def rank(ctx):
         user = U[ctx.author.id]
         await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate*(user.lvl+1)}] until level {user.lvl+1}.",color=ctx.author.color))
 
+@withrepr(lambda x: 'Change the message cooldown (admin only).')
 @client.command(aliases=['cool'])
 async def cooldown(ctx,c:int):
     if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
@@ -48,10 +49,12 @@ async def cooldown(ctx,c:int):
         else:
             await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
 
+@withrepr(lambda x: 'See the current cooldown.')
 @client.command(aliases=['getcool','getcd'])
 async def getcooldown(ctx):
     await ctx.send(embed=discord.Embed(description=f"Cooldown is currently {Bot.cooldown} seconds.",color=0x99a3a4))
 
+@withrepr(lambda x: 'See the top 10 most active users.')
 @client.command(aliases=['leads','lead','leaders'])
 async def leaderboard(ctx):
     server = []
@@ -64,6 +67,7 @@ async def leaderboard(ctx):
     embed = discord.Embed(title='Leaderboard',description=desc,color=0xb07bff)
     await ctx.send(embed=embed)
 
+@withrepr(lambda x: "Save ranking data because it can't happen automatically.")
 @client.command()
 async def savedata(ctx):
     with open('users.txt','w') as f:
@@ -73,6 +77,7 @@ async def savedata(ctx):
         f.close()
     await ctx.send(embed=discord.Embed(description="User ranking data has been saved.",color=0x3ce74c))
 
+@withrepr(lambda x: 'Assign a level to a user (admin only).')
 @client.command()
 async def givelevel(ctx,user:discord.User=None,lvl=0):
     if ctx.author.guild_permissions.administrator:
