@@ -21,8 +21,9 @@ class Bot_Info: # class with basic bot info
         self.connected = False
         with open("cooldown.txt",'r') as f: self.cooldown = int(f.readline()); f.close()
         self.rate = 5 # rate at which users level up relative to messages sent
+        self.lvlroles = {}
 
-class Log(Cog): # listeners for ranking
+class Log(Cog): # cog listeners for ranking
     def __init__(self,bot,obj):
         self.bot = bot # the client
         self.obj = obj # the Bot object
@@ -44,7 +45,41 @@ class Log(Cog): # listeners for ranking
                 U[message.author.id].xp += 1
                 if U[message.author.id].lvlup():
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
-
+                    author = U[message.author.id]
+                    user = message.author
+                    if author.lvl == 1:
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='one'))
+                    elif author.lvl == 2:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='one'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='two'))
+                    '''
+                    if author.lvl == 1:
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Protostars'))
+                    elif author.lvl == 5:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Protostars'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
+                    elif author.lvl == 10:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
+                    elif author.lvl == 20:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
+                    elif author.lvl == 30:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
+                    elif author.lvl == 50:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
+                    elif author.lvl == 70:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
+                    elif author.lvl == 90:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
+                    elif author.lvl == 100:
+                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
+                        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Holes'))
+                    '''
 class Copypastas: # create copypastas
     def __init__(self):
         self.kira = "My name is Yoshikage Kira. I'm 33 years old. My house is in the northeast section of Morioh, where all the villas are, and I am not married. I work as an employee for the Kame Yu department stores, and I get home every day by 8 PM at the latest. I don't smoke, but I occasionally drink. I'm in bed by 11 PM, and make sure I get eight hours of sleep, no matter what. After having a glass of warm milk and doing about twenty minutes of stretches before going to bed, I usually have no problems sleeping until morning. Just like a baby, I wake up without any fatigue or stress in the morning. I was told there were no issues at my last check-up. I'm trying to explain that I'm a person who wishes to live a very quiet life. I take care not to trouble myself with any enemies, like winning and losing, that would cause me to lose sleep at night. That is how I deal with society, and I know that is what brings me happiness. Although, if I were to fight I wouldn't lose to anyone."
@@ -112,7 +147,6 @@ class User: # to store user ranking data
         if self.nxp >= self.rate*(self.lvl+1)-1:
             self.lvl += 1
             self.nxp = 0
-            # code to assign a new role would go here
             return True
         else:
             self.nxp += 1
@@ -151,6 +185,6 @@ stopwatch = Stopwatch_() # for music
 copypastas = Copypastas()
 
 # initialize Discord client
-activity = discord.Activity(name='rammstein or something', type=discord.ActivityType.listening)
-client = commands.Bot(command_prefix=Bot.prefix,help_command=None,activity=activity)
+activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)
+client = commands.Bot(command_prefix=Bot.prefix,help_command=None)
 client.add_cog(Log(client,Bot))
