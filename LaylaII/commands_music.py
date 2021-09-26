@@ -19,8 +19,7 @@ def retrieve(arg): # return title, url, and duration of top result of search
         info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
     return (info['title'], info['formats'][0]['url'], info['duration'])
 
-
-def get_time(sec): # convert time from raw seconds into hh:mm:ss
+def get_time(sec,Q=False,l=0): # convert time from raw seconds into hh:mm:ss
     dur = str(td(seconds=sec))
     for i in range(len(dur)):
         if dur[i] not in ['0',':']:
@@ -31,25 +30,20 @@ def get_time(sec): # convert time from raw seconds into hh:mm:ss
     # always at least show the single minutes
     if len(dur) == 1: dur = '0:0'+dur
     elif len(dur) == 2: dur = '0:'+dur
+    # if this is for the queue, make sure the time is always aligned
+    if Q:
+        if len(dur) > 8: dur = 'OVER'
+        dur = ' '*(65-l-len(dur)) + dur
+        while l+len(dur) < 68: dur = ' '+dur
     return dur
 
-
-#@client.command(pass_context=True)
-async def search(ctx,*,query): # get top 10 search results
-    results = []
-    with YoutubeDL({'format': 'bestaudio', 'noplaylist':'True','cookies':'cookies.txt'}) as ydl:
-        for i in range(10):
-            results.append(ydl.extract_info(f"ytsearch:{query}", download=False)['entries'][i])
-            await ctx.send(results[-1]['title'])
-    message = ''
-    for result in results:
-        message += '\n'+result['title']
-
+def trim_title(name): # trim the title if it is too long (to keep times aligned in queue)
+    if len(name) > 62: return name[:60]+'...'
+    else: return name
 
 @withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Aliases = p.')
 @client.command(aliases=['p'],pass_context=True)
 async def play(ctx, *, query : str):
-
     if not ctx.author.voice:
         await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=0xe74c3c))
 
@@ -61,11 +55,9 @@ async def play(ctx, *, query : str):
         except: await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=0xe74c3c))
 
     if ctx.author.voice and Bot.connected:
-
         if len(Q.queue) > 19:
             await ctx.send(embed=discord.Embed(description='Queue is maxed out.',color=0xe74c3c))
         else:
-
             if 'https' in query: # if query is a url, remove extraneous parts of url
                 url = query
                 try: url = url[:url.index('&')]
@@ -73,19 +65,17 @@ async def play(ctx, *, query : str):
 
             # search youtube for query (searching a url will return the url)
             title, url, duration = retrieve(query)
-            dur = get_time(duration)
+            dur = get_time(duration,False)
             FFMPEG_OPTS['options'] = '-vn'
             if len(Q.queue) == Q.current == 0:
                 await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
                 stopwatch.Reset(); stopwatch.Start()
                 Q.loop = False
-            else:
-                await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
+            else: await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
 
             Q.queue.append(Song(title,url,dur,ctx.author.mention,duration)) # add song to queue
-
             if Q.current == len(Q.queue)-1:
-                try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS)) # play song
+                try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset()) # play song
                 except: pass
 
 
@@ -94,8 +84,8 @@ async def play(ctx, *, query : str):
 async def queue(ctx):
     message = "```"
     for i,song in enumerate(Q.queue):
-        if i == Q.current: message += f"\n{i}) {song.title}  {get_time(song.rawtime-stopwatch.GetTime())} <=="
-        else: message += f"\n{i}) {song.title}  {song.length}"
+        if i == Q.current: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime-stopwatch.GetTime(),True,len(trim_title(song.title)))} <=="
+        else: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime,True,len(trim_title(song.title)))}"
     if Q.loop: message += "\nThe current song is being looped."
     message += '```'
     if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
@@ -120,8 +110,7 @@ async def leave(ctx):
     if ctx.guild.voice_client in client.voice_clients:
         await voice.disconnect()
         Bot.connected = False
-        Q.queue = []
-        #stopwatch.Reset()
+        Q.queue = []; stopwatch.Reset()
     else: await ctx.send(embed=discord.Embed(description='No voice channel to leave from.',color=0xe74c3c))
 
 
@@ -140,6 +129,7 @@ async def resume(ctx):
     if voice.is_paused(): voice.resume(); stopwatch.Resume()
     else: await ctx.send(embed=discord.Embed(description='Not already paused.',color=0xe74c3c))
 
+
 @withrepr(lambda x: 'Stops the current song.')
 @client.command(pass_context=True)
 async def stop(ctx,manual=True):
@@ -153,10 +143,9 @@ async def stop(ctx,manual=True):
 async def next(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
     voice.stop(); stopwatch.Reset()
-    if not Q.loop:
-        Q.current += 1
+    if not Q.loop: Q.current += 1
     try:
-        ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS))
+        ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset())
         await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
         stopwatch.Reset(); stopwatch.Start()
     except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=0xe74c3c))
@@ -170,16 +159,14 @@ async def remove(ctx,index:int):
             song = Q.queue.pop(index)
             if index < Q.current and index >= 0: Q.current -= 1
             await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=0x99a3a4))
-        else:
-            await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=0xe74c3c))
+        else: await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=0xe74c3c))
     except: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
 
 @withrepr(lambda x: "Clear the queue (use if queue is broken). Aliases = cl,c.")
 @client.command(aliases=['cl','c'],pass_context=True)
 async def clear(ctx):
-    Q.queue = []
-    Q.current = 0
+    Q.queue = []; Q.current = 0
     await ctx.send(embed=discord.Embed(description="Queue has been cleared.",color=0x99a3a4))
 
 
@@ -193,14 +180,12 @@ async def loop(ctx):
 @withrepr(lambda x: "See the current song.")
 @client.command(aliases=['nowplaying'],pass_context=True)
 async def np(ctx):
-    if len(Q.queue) == 0:
-        await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
-    elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime:
-        await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
+    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
+    elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime: await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
     else:
         p = int(stopwatch.GetTime()/Q.queue[Q.current].rawtime*25)
         bar = '▬'*p + ':purple_circle:' + '▬'*(25-p)
-        await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime())}/{Q.queue[Q.current].length}]\n
+        await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime(),False)}/{Q.queue[Q.current].length}]\n
         {bar}""",color=0x99a3a4))
 
 
