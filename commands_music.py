@@ -221,6 +221,18 @@ async def setcurrent(ctx,index:int):
         await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
+@withrepr(lambda x: "Jump to a position in the queue.")
+@client.command(pass_context=True)
+async def jump(ctx,index:int):
+    try:
+        _ = Q.queue[index]
+        Q.current = index
+        voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
+        voice.stop(); stopwatch.Reset()
+        ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset())
+        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
+        stopwatch.Start()
+    except IndexError: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
 @withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)
