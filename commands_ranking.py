@@ -67,29 +67,19 @@ async def leaderboard(ctx):
     embed = discord.Embed(title='Leaderboard',description=desc,color=0xb07bff)
     await ctx.send(embed=embed)
 
-@withrepr(lambda x: "Save ranking data because it can't happen automatically.")
-@client.command()
-async def savedata(ctx):
-    with open('users.txt','w') as f:
-        lines = []
-        for u in U: lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
-        for line in lines: f.write(line); f.write('\n')
-        f.close()
-    await ctx.send(embed=discord.Embed(description="User ranking data has been saved.",color=0x3ce74c))
-
 @withrepr(lambda x: 'Assign a level to a user (admin only).')
 @client.command()
 async def givelevel(ctx,user:discord.User=None,lvl=0):
     if ctx.author.guild_permissions.administrator:
         try:
-            U[user.id] = User(user.id,Bot,lvl*5,lvl,0)
-            await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*5} xp].",color=0x3ce74c))
+            U[user.id] = User(user.id,Bot,lvl*Bot.rate,lvl,0)
+            await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*Bot.rate} xp].",color=0x3ce74c))
         except:
             await ctx.send(embed=discord.Embed(description="Something went wrong, and it's your fault.",color=0xe74c3c))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
 
-@withrepr(lambda x: 'Change the rate at which users level up.')
+@withrepr(lambda x: 'Change the rate at which users level up (admin only).')
 @client.command()
 async def changerate(ctx,rate:int):
     if ctx.author.guild_permissions.administrator:

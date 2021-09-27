@@ -34,13 +34,6 @@ from init import *
 async def hello(ctx):
     await ctx.send(embed=discord.Embed(title='Hi there hello.',color=0xb07bff))
 
-# command forcequit
-@client.command()
-async def forcequit(ctx):
-    if ctx.message.author.id == Bot.owner:
-        await ctx.send('Forcequitted by owner.')
-        sys.exit()
-
 # command say
 @withrepr(lambda x: 'say whatever cursed shit you want it to')
 @client.command()

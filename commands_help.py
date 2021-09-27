@@ -103,7 +103,7 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
                      begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
                      [readme,play,pause,resume,stop,loop,np,next,queue,remove,clear,setcurrent,leave],
-                     [rank,leaderboard,savedata,getcooldown,cooldown,givelevel],
+                     [rank,leaderboard,getcooldown,getrate,cooldown,changerate,givelevel],
                      [hello,prefix,say,mock,wide,thicc,smol,aussie,leet])
 
 @client.command()

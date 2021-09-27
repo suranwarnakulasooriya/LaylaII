@@ -35,7 +35,9 @@ import sys # to kill code
 import functools # for help command
 from youtube_dl import YoutubeDL # to search YouTube
 from discord import FFmpegPCMAudio # to stream audio
-from datetime import timedelta as td # for music duration
+
+# for music duration and cooldown
+from datetime import timedelta as td
 import time
 
 class Bot_Info: # class with basic bot info
@@ -44,7 +46,7 @@ class Bot_Info: # class with basic bot info
         self.token = token
         self.connected = False
         with open("cooldown.txt",'r') as f: self.cooldown = int(f.readline()); f.close()
-        self.rate = 5 # rate at which users level up relative to messages sent
+        with open("rate.txt",'r') as f: self.rate = int(f.readline()); f.close() # rate at which users level up relative to messages sent
         self.lvlroles = {}
 
 class Log(Cog): # cog listeners for ranking
@@ -69,6 +71,11 @@ class Log(Cog): # cog listeners for ranking
             if message.author.id not in U: U[message.author.id] = User(message.author.id,self.obj)
             elif U[message.author.id].valid(self.obj.cooldown):
                 U[message.author.id].xp += 1
+                with open('users.txt','w') as f:
+                    lines = []
+                    for u in U: lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
+                    for line in lines: f.write(line); f.write('\n')
+                    f.close()
                 if U[message.author.id].lvlup():
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
                     author = U[message.author.id]
