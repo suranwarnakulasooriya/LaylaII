@@ -46,7 +46,6 @@ rank() # see your level and xp
 cooldown(newcooldown) # (admin only) change the cooldown from 1-10
 getcooldown() # see what the current cooldown is without changing it
 leaderboard() # show the top 10 users with the most xp
-savedata() # save ranking data, it is not saved manually so killing and restarting the bot without doing this first will erase progress
 givelevel(user,level) # (admin only) assign a level to a user (changes xp accordingly)
 changerate(rate) # (admin only) change the rate at which users level up
 getrate() # see the current level up rate
