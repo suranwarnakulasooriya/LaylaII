@@ -65,18 +65,18 @@ class Log(Cog): # cog listeners for ranking
 
     @Cog.listener("on_message")
     async def on_message(self,message):
-        if client.user.mentioned_in(message):
+        if client.user.mentioned_in(message): # show prefix when mentioned
             await message.channel.send(f"My prefix is `{self.obj.prefix}`")
         if not message.author.bot:
             if message.author.id not in U: U[message.author.id] = User(message.author.id,self.obj)
             elif U[message.author.id].valid(self.obj.cooldown):
                 U[message.author.id].xp += 1
-                with open('users.txt','w') as f:
+                with open('users.txt','w') as f: # save user data
                     lines = []
                     for u in U: lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
                     for line in lines: f.write(line); f.write('\n')
                     f.close()
-                if U[message.author.id].lvlup():
+                if U[message.author.id].lvlup(): # react accordingly on lvlup
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
                     author = U[message.author.id]
                     user = message.author
