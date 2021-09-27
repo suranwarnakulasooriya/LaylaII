@@ -37,6 +37,7 @@ next() # to progress to the next song in the queue
 remove(index) # remove any valid index in the queue
 clear() # clears queue but stays in voice
 loop() # toggle whether currint song is looping (if true, next will restart the song instead of go the the next one)
+jump(index) # skip to a given index in the queue
 np() # see the progress of the current song
 setcurrent(index) # manually set the current song in the queue if wrong
 
