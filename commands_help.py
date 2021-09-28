@@ -4,6 +4,8 @@
 
 # ==============================================================================
 '''
+MIT License
+
 Copyright (c) 2021 Suran Warnakulasooriya
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -4,6 +4,8 @@
 
 # ==============================================================================
 '''
+MIT License
+
 Copyright (c) 2021 Suran Warnakulasooriya
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -108,8 +110,10 @@ async def play(ctx, *, query : str):
 async def queue(ctx):
     message = "```"
     for i,song in enumerate(Q.queue):
-        if i == Q.current: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime-stopwatch.GetTime(),True,len(trim_title(song.title)))} <=="
-        else: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime,True,len(trim_title(song.title)))}"
+        if i > 9: l = len(trim_title(song.title))+1
+        else: l = len(trim_title(song.title))
+        if i == Q.current: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime-stopwatch.GetTime(),True,l)} <=="
+        else: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime,True,l)}"
     if Q.loop: message += "\nThe current song is being looped."
     message += '```'
     if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
@@ -226,6 +230,7 @@ async def setcurrent(ctx,index:int):
 async def jump(ctx,index:int):
     try:
         _ = Q.queue[index]
+        if index != Q.current: Q.loop = False
         Q.current = index
         voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
         voice.stop(); stopwatch.Reset()

@@ -4,6 +4,8 @@
 
 # ==============================================================================
 '''
+MIT License
+
 Copyright (c) 2021 Suran Warnakulasooriya
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -71,12 +73,12 @@ class Log(Cog): # cog listeners for ranking
             if message.author.id not in U: U[message.author.id] = User(message.author.id,self.obj)
             elif U[message.author.id].valid(self.obj.cooldown):
                 U[message.author.id].xp += 1
-                with open('users.txt','w') as f: # save user data
+                with open('users.txt','w') as f:
                     lines = []
                     for u in U: lines.append(f"{U[u].id} {U[u].xp} {U[u].lvl} {U[u].nxp}")
                     for line in lines: f.write(line); f.write('\n')
                     f.close()
-                if U[message.author.id].lvlup(): # react accordingly on lvlup
+                if U[message.author.id].lvlup():
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
                     author = U[message.author.id]
                     user = message.author
