@@ -144,7 +144,7 @@ async def leave(ctx):
     if ctx.guild.voice_client in client.voice_clients and ctx.author.voice:
         await voice.disconnect()
         Bot.connected = False
-        Q.queue = []; stopwatch.Reset()
+        Q.queue = []; stopwatch.Reset(); Q.current = 0
     else: await ctx.send(embed=discord.Embed(description='No voice channel to leave from.',color=0xe74c3c))
 
 
