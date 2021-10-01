@@ -31,10 +31,10 @@ SOFTWARE.
 from init import *
 
 # command hello
-@withrepr(lambda x: 'check the aliveness of the bot')
+@withrepr(lambda x: "check the aliveness and latency")
 @client.command()
 async def hello(ctx):
-    await ctx.send(embed=discord.Embed(title='Hi there hello.',color=0xb07bff))
+  await ctx.send(embed=discord.Embed(title="Hi there hello.",description=f"{round(client.latency*1000,2)} ms"))
 
 # command say
 @withrepr(lambda x: 'say whatever cursed shit you want it to')
@@ -277,6 +277,12 @@ async def napkin(ctx):
 @client.command()
 async def neitzsche(ctx):
     await ctx.send(copypastas.neitzsche)
+
+# command linux
+@withrepr(lambda x: "I'd like to intereject...")
+@client.command()
+async def linux(ctx):
+    await ctx.send(copypastas.linux)
 
 # command space
 @withrepr(lambda x: 'A big block of nothing.')

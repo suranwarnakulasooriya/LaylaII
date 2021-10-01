@@ -67,6 +67,10 @@ def trim_title(name): # trim the title if it is too long (to keep times aligned 
     if len(name) > 62: return name[:60]+'...'
     else: return name
 
+def wrap_index(index,L):
+    if 0 <= index < len(L): return index
+    elif 0 > index: return len(L)+index
+
 @withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Aliases = p.')
 @client.command(aliases=['p'],pass_context=True)
 async def play(ctx, *, query : str):
@@ -108,16 +112,18 @@ async def play(ctx, *, query : str):
 @withrepr(lambda x: 'Show the queue. Aliases = q.')
 @client.command(aliases=['q'],pass_context=True)
 async def queue(ctx):
-    message = "```"
-    for i,song in enumerate(Q.queue):
-        if i > 9: l = len(trim_title(song.title))+1
-        else: l = len(trim_title(song.title))
-        if i == Q.current: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime-stopwatch.GetTime(),True,l)} <=="
-        else: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime,True,l)}"
-    if Q.loop: message += "\nThe current song is being looped."
-    message += '```'
-    if message == '``````' or message == '```\nThe current song is being looped.```': await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
-    else: await ctx.send(message)
+    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
+    else:
+        message = "```"
+        for i,song in enumerate(Q.queue):
+            if i > 9: l = len(trim_title(song.title))+1
+            else: l = len(trim_title(song.title))
+            if i == Q.current:
+                message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime-stopwatch.GetTime(),True,l)} <=="
+                if Q.loop: message += ' loop'
+            else: message += f"\n{i}) {trim_title(song.title)}  {get_time(song.rawtime,True,l)}"
+        message += '```'
+        await ctx.send(message)
 
 
 @withrepr(lambda x: 'Join the voice channel of the author. Aliases = j.')
@@ -135,7 +141,7 @@ async def join(ctx):
 @client.command(aliases=['fuckoff','die','getout','l'],pass_context=True)
 async def leave(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
-    if ctx.guild.voice_client in client.voice_clients:
+    if ctx.guild.voice_client in client.voice_clients and ctx.author.voice:
         await voice.disconnect()
         Bot.connected = False
         Q.queue = []; stopwatch.Reset()
@@ -225,10 +231,12 @@ async def setcurrent(ctx,index:int):
         await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
     else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
+
 @withrepr(lambda x: "Jump to a position in the queue.")
 @client.command(pass_context=True)
 async def jump(ctx,index:int):
     try:
+        index = wrap_index(index,Q.queue)
         _ = Q.queue[index]
         if index != Q.current: Q.loop = False
         Q.current = index
@@ -238,6 +246,7 @@ async def jump(ctx,index:int):
         await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
         stopwatch.Start()
     except IndexError: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+
 
 @withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)
