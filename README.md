@@ -15,7 +15,7 @@ The bot has other extraneous commands that I added for fun, including text manip
 A Python interpreter, `discord.py`, `youtube-dl`, and `ffmpeg` are needed to run the bot. The most recent stable version of Python is recommended at [python.org](https://www.python.org/downloads/). 3.8 is the oldest usable version. discord.py can be installed using `pip` with Rapptz' guide on his [GitHub page](https://github.com/Rapptz/discord.py). `discord.py[voice]` is needed for voice support. The `PyNaCl` library should be automatically installed with discord.py, but in case it isnt, install it separately.
 ```
 python3 -m pip install --upgrade pip
-pip install discord
+pip install discord.py
 pip install -U 'discord.py[voice]'
 pip install PyNaCl
 pip isntall youtube-dl
