@@ -104,12 +104,12 @@ async def getrate(ctx):
 @withrepr(lambda x: 'Change your color role.')
 @client.command()
 async def setcolor(ctx,role:str):
-    #try:
-    if role in Roles:
-        user = ctx.author
-        for r in Roles:
-            await user.remove_roles(discord.utils.get(ctx.guild.roles,name=r))
-        await user.add_roles(discord.utils.get(ctx.guild.roles,name=role))
-        await ctx.send(embed=discord.Embed(description=f"Changed color to {role}.",color=0x3ce74c))
-    else: await ctx.send(e,bed=discord.Embed(description="Role not valid.",color=0xe74c3c))
-    #except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))
+    try:
+        if role in Roles:
+            user = ctx.author
+            for r in Roles:
+                await user.remove_roles(discord.utils.get(ctx.guild.roles,name=r))
+            await user.add_roles(discord.utils.get(ctx.guild.roles,name=role))
+            await ctx.send(embed=discord.Embed(description=f"Changed color to {role}.",color=0x3ce74c))
+        else: await ctx.send(e,bed=discord.Embed(description="Role not valid.",color=0xe74c3c))
+    except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))
