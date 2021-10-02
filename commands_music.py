@@ -82,7 +82,7 @@ async def play(ctx, *, query : str):
             channel = ctx.author.voice.channel
             voice = await channel.connect()
             Bot.connected = True
-        except: await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=0xe74c3c))
+        except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))
 
     if ctx.author.voice and Bot.connected:
         if len(Q.queue) > 19:
