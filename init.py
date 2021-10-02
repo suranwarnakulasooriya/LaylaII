@@ -51,6 +51,36 @@ class Bot_Info: # class with basic bot info
         with open("rate.txt",'r') as f: self.rate = int(f.readline()); f.close() # rate at which users level up relative to messages sent
         self.lvlroles = {}
 
+async def roleup(message):
+    author = U[message.author.id]
+    user = message.author
+    if author.lvl == 1:
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Protostars'))
+    elif author.lvl == 5:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Protostars'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
+    elif author.lvl == 10:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
+    elif author.lvl == 20:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
+    elif author.lvl == 30:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
+    elif author.lvl == 50:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
+    elif author.lvl == 70:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
+    elif author.lvl == 90:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
+    elif author.lvl == 100:
+        await user.remove_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
+        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Holes'))
+
 class Log(Cog): # cog listeners for ranking
     def __init__(self,bot,obj):
         self.bot = bot # the client
@@ -80,47 +110,17 @@ class Log(Cog): # cog listeners for ranking
                     f.close()
                 if U[message.author.id].lvlup():
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
-                    author = U[message.author.id]
-                    user = message.author
-                    if author.lvl == 1:
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='one'))
-                    elif author.lvl == 2:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='one'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='two'))
-                    '''
-                    if author.lvl == 1:
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Protostars'))
-                    elif author.lvl == 5:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Protostars'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
-                    elif author.lvl == 10:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Main Sequence Stars'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
-                    elif author.lvl == 20:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Giants'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
-                    elif author.lvl == 30:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Red Supergiants'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
-                    elif author.lvl == 50:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='White Dwarfs'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
-                    elif author.lvl == 70:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Black Dwarfs'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
-                    elif author.lvl == 90:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Supernovas'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
-                    elif author.lvl == 100:
-                        await user.remove_roles(discord.utils.get(message.guild.roles,name='Neutron Stars'))
-                        await user.add_roles(discord.utils.get(message.guild.roles,name='Black Holes'))
-                    '''
+                    await roleup(message)
+
 class Copypastas: # create copypastas
     def __init__(self):
         self.kira = "My name is Yoshikage Kira. I'm 33 years old. My house is in the northeast section of Morioh, where all the villas are, and I am not married. I work as an employee for the Kame Yu department stores, and I get home every day by 8 PM at the latest. I don't smoke, but I occasionally drink. I'm in bed by 11 PM, and make sure I get eight hours of sleep, no matter what. After having a glass of warm milk and doing about twenty minutes of stretches before going to bed, I usually have no problems sleeping until morning. Just like a baby, I wake up without any fatigue or stress in the morning. I was told there were no issues at my last check-up. I'm trying to explain that I'm a person who wishes to live a very quiet life. I take care not to trouble myself with any enemies, like winning and losing, that would cause me to lose sleep at night. That is how I deal with society, and I know that is what brings me happiness. Although, if I were to fight I wouldn't lose to anyone."
         self.napkin = "Suppose that you were sitting down at this table. The napkins are in front of you, which napkin would you take? The one on your ‘left’? Or the one on your ‘right’? The one on your left side? Or the one on your right side? Usually you would take the one on your left side. That is ‘correct’ too. But in a larger sense on society, that is wrong. Perhaps I could even substitute ‘society’ with the ‘Universe’. The correct answer is that ‘It is determined by the one who takes his or her own napkin first.’ …Yes? If the first one takes the napkin to their right, then there’s no choice but for others to also take the ‘right’ napkin. The same goes for the left. Everyone else will take the napkin to their left, because they have no other option. This is ‘society’… Who are the ones that determine the price of land first? There must have been someone who determined the value of money, first. The size of the rails on a train track? The magnitude of electricity? Laws and Regulations? Who was the first to determine these things? Did we all do it, because this is a Republic? Or was it Arbitrary? NO! The one who took the napkin first determined all of these things! The rules of this world are determined by that same principle of ‘right or left?’! In a Society like this table, a state of equilibrium, once one makes the first move, everyone must follow! In every era, this World has been operating by this napkin principle. And the one who ‘takes the napkin first’ must be someone who is respected by all. It’s not that anyone can fulfill this role… Those that are despotic or unworthy will be scorned. And those are the ‘losers’. In the case of this table, the ‘eldest’ or the ‘Master of the party’ will take the napkin first… Because everyone ‘respects’ those individuals."
         self.neitzsche = "God is dead. God remains dead. And we have killed him. How shall we comfort ourselves, the murderers of all murderers? What was holiest and mightiest of all that the world has yet owned has bled to death under our knives? Who will wipe this blood off us? What water is there for us to clean ourselves? What festivals of atonement, what sacred games shall we have to invent? Is not the greatness of this deed too great for us? Must we ourselves not become gods simply to appear worthy of it?"
         self.linux = """I'd just like to interject for a moment. What you're referring to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux. Linux is not an operating system unto itself, but rather another free component of a fully functioning GNU system made useful by the GNU corelibs, shell utilities and vital system components comprising a full OS as defined by POSIX. Many computer users run a modified version of the GNU system every day, without realizing it. Through a peculiar turn of events, the version of GNU which is widely used today is often called "Linux", and many of its users are not aware that it is basically the GNU system, developed by the GNU Project. There really is a Linux, and these people are using it, but it is just a part of the system they use. Linux is the kernel: the program in the system that allocates the machine's resources to the other programs that you run. The kernel is an essential part of an operating system, but useless by itself; it can only function in the context of a complete operating system. Linux is normally used in combination with the GNU operating system: the whole system is basically GNU with Linux added, or GNU/Linux. All the so-called "Linux" distributions are really distributions of GNU/Linux."""
+        self.sf1 = """So someone in a group asked me to tell them why I hate the ocean sunfish so much, and apparently it was ~too mean~ and was deleted. To perpetuate the truth and stand up for ethical journalism, I'm posting it here. [Rated NC-17 for language.] Disclaimer, I care about marine life more than I care about anything else, for real. Except this big dumb idiot. And it's not like an ~ironic~ thing, I mean it IS hilarious to me and they ARE THE BIGGEST JOKE PLAYED ON EARTH but I seriously fucking hate them. THE MOLA MOLA FISH (OR OCEAN SUNFISH) They are the world's largest boney fish, weighing up to 5,000 pounds. And since they have very little girth, that just makes them these absolutely giant fucking dinner plates that God must have accidentally dropped while washing dishes one day and shrugged his shoulders at because no one could have imagined this would happen. AND WITH NO PURPOSE. EVERY POUND OF THAT IS A WASTED POUND AND EVERY FOOT OF IT (10 FT BY 14 FT) IS WASTED SPACE. They are so completely useless that scientists even debate about how they move. They have little control other than some minor wiggling. Some say they must just push water out of their mouths for direction (?????). They COULD use their back fin EXCEPT GUESS WHAT IT DOESNT FUCKING GROW. It just continually folds in on itself, so the freaking cells are being made, this piece of floating garbage just doesn't put them where they need to fucking go. So they don't have swim bladders. You know, the one thing that every fish has to make sure it doesn't just sink to the bottom of the ocean when they stop moving and can stay the right side up. This creature. That can barely move to begin with. Can never stop its continuous tour of idiocy across the ocean or it'll fucking sink. EXCEPT. EXCEPT. When they get stuck on top of the water! Which happens frequently! Because without the whole swim bladder thing, if the ocean pushes over THE THINNEST BUT LARGEST MOST TOPPLE-ABLE FISH ON THE PLANET, shit outta luck!"""
+        self.sf2 = """There is no creature on this earth that needs a swim bladder more than this spit in the face of nature, AND YET. Some scientists have speculated that when they do that, they are absorbing energy from the sun because no one fucking knows how they manage to get any real energy to begin with. So they need the sun I guess. But good news, when they end up stuck like that, it gives birds a chance to land on their goddamn island of a body and eat the bugs and parasites out of its skin because it's basically a slowly migrating cesspool. Pros and cons. "If they are so huge, they must at least be decent predators." No. No. The most dangerous thing about them is, as you may have guessed, their stupidity. They have caused the death of one person before. Because it jumped onto a boat. On a human. And in 2005 it decided to relive its mighty glory days and do it again, this time landing on a four-year-old boy. Luckily Byron sustained no injuries. Way to go, fish. Great job. They mostly only eat jellyfish because of course they do, they could only eat something that has no brain and a possibility of drifting into their mouths I guess. Everything they do eat has almost zero nutritional value and because it's so stupidly fucking big, it has to eat a ton of the almost no nutritional value stuff to stay alive. Dumb. See that ridiculous open mouth? (This is actually why this is my favorite picture of one, and I have had it saved to my phone for three years) "Oh no! What could have happened! How could this be!" Do not let that expression fool you, they just don't have the goddamn ability to close their mouths because their teeth are fused together, and ya know what, it is good it floats around with such a clueless expression on its face, because it is in fact clueless as all fuck."""
+        self.sf3 = """They do SOMETIMES get eaten though. BUT HARDLY. No animal truly uses them as a food source, but instead (which has lead us to said photo) will usually just maim the fuck out of them for kicks. Seals have been seen playing with their fins like frisbees. Probably the most useful thing to ever come from them. "Wow, you raise some good points here, this fish truly is proof that God has abandoned us." Yes, thank you. "But if they're so bad at literally everything, why haven't they gone extinct." Great question. BECAUSE THIS THING IS SO WORTHLESS IT DOESNT REALIZE IT SHOULD NOT EXIST. IT IS SO UNAWARE OF LITERALLY FUCKING EVERYTHING THAT IT DOESNT REALIZE THAT IT'S DOING MAYBE THE WORST FUCKING JOB OF BEING A FISH, OR DEBATABLY THE WORST JOB OF BEING A CLUSTER OF CELLS THAN ANY OTHER CLUSTER OF CELLS. SO WHAT DOES IT DO? IT LAYS THE MOST EGGS OUT OF EVERYTHING. Besides some bugs, there are some ants and stuff that'll lay more. IT WILL LAY 300 MILLION EGGS AT ONE TIME. 300,000,000. IT SURVIVES BECAUSE IT WOULD BE STATISTICALLY IMPROBABLE, DARE I SAY IMPOSSIBLE, THAT THERE WOULDNT BE AT LEAST ONE OF THOSE 300,000,000 (that is EACH time they lay eggs) LEFT SURVIVING AT THE END OF THE DAY. And this concludes why I hate the fuck out of this complete failure of evolution, the Ocean Sunfish. If I ever see one, I will throw rocks at it."""
         self.space = "​\n"*50
 
 class Song: # class with repeatedly accessed song information
@@ -219,6 +219,7 @@ for user in usersstr:
 Q = Queue()
 stopwatch = Stopwatch_() # for music
 copypastas = Copypastas()
+Roles = ['Invisible','Pink','Black','Gray','White','Brown','Purple','Lunar','Blue','Blurple','Ice','Turquoise','Green','Yellow','Orange','Red']
 
 # initialize Discord client
 activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)

@@ -76,8 +76,9 @@ async def givelevel(ctx,user:discord.User=None,lvl=0):
         try:
             U[user.id] = User(user.id,Bot,lvl*Bot.rate,lvl,0)
             await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*Bot.rate} xp].",color=0x3ce74c))
+            await roleup(ctx)
         except:
-            await ctx.send(embed=discord.Embed(description="Something went wrong, and it's your fault.",color=0xe74c3c))
+            await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0xe74c3c))
 
@@ -99,3 +100,16 @@ async def changerate(ctx,rate:int):
 @client.command()
 async def getrate(ctx):
     await ctx.send(embed=discord.Embed(description=f"Level up rate is currently {Bot.rate} messages.",color=0x99a3a4))
+
+@withrepr(lambda x: 'Change your color role.')
+@client.command()
+async def setcolor(ctx,role:str):
+    #try:
+    if role in Roles:
+        user = ctx.author
+        for r in Roles:
+            await user.remove_roles(discord.utils.get(ctx.guild.roles,name=r))
+        await user.add_roles(discord.utils.get(ctx.guild.roles,name=role))
+        await ctx.send(embed=discord.Embed(description=f"Changed color to {role}.",color=0x3ce74c))
+    else: await ctx.send(e,bed=discord.Embed(description="Role not valid.",color=0xe74c3c))
+    #except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))

@@ -297,6 +297,14 @@ async def penis(ctx):
     await ctx.send('penis')
     await ctx.send(f'hey {ctx.author.mention} why are you looking at penis??')
 
+# command sunfish
+@withrepr(lambda x: "Sunfish are stupid.")
+@client.command()
+async def sunfish(ctx):
+    await ctx.send(copypastas.sf1)
+    await ctx.send(copypastas.sf2)
+    await ctx.send(copypastas.sf3)
+
 @withrepr(lambda x: 'Change the prefix (admin only).')
 @client.command()
 async def prefix(ctx,p:str):
