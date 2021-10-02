@@ -219,7 +219,7 @@ for user in usersstr:
 Q = Queue()
 stopwatch = Stopwatch_() # for music
 copypastas = Copypastas()
-Roles = ['Invisible','Pink','Black','Gray','White','Brown','Purple','Lunar','Blue','Blurple','Ice','Turquoise','Green','Yellow','Orange','Red']
+Roles = ['Invisible','Pink','Black','Gray','White','Brown','Purple','Lunar','Blue','Blurple','Ice','Turquoise','Green','Yellow','Orange','Red'] # valid color roles
 
 # initialize Discord client
 activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)
