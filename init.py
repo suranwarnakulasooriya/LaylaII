@@ -32,6 +32,7 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
+import os # for environment variables
 
 import sys # to kill code
 import functools # for help command
@@ -51,7 +52,7 @@ class Bot_Info: # class with basic bot info
         with open("rate.txt",'r') as f: self.rate = int(f.readline()); f.close() # rate at which users level up relative to messages sent
         self.lvlroles = {}
 
-async def roleup(message):
+async def roleup(message): # thresholds and role names
     author = U[message.author.id]
     user = message.author
     if author.lvl == 1:
@@ -206,7 +207,8 @@ def withrepr(reprfun):
 
 # initialize Bot object
 with open('prefix.txt','r') as f: bot_prefix = f.read(); f.close()
-with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close()
+with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close() # read token from local file
+# bot_token = os.environ['TOKEN'] # read token as environment variable
 Bot = Bot_Info(bot_prefix,bot_token)
 
 # initialize dict of user ranking objects
