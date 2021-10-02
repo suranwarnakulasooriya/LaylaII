@@ -262,9 +262,6 @@ async def readme(ctx):
     If the audio never starts, it might have been randomly denied (yes it happens, it should say the song is over in the queue), requeue the song and skip to it (.next).\n
     Sometimes the audio prematurely cuts off, this might be because the video is buffering, so wait for a little bit. If the song doesn't continue, requeue the song and skip to it.\n
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
-    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
-    .remove -1 is the fastest way to remove the last song in the queue.
-    If the bot isnt joining voice but says its queued music, use .connect to toggle the connection and it might still think it is conneced. Disconnecting the bot forces me to restart it, don't make me do that.
-    I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
-    embed.set_footer(text='Always remember: this bot is better than Rythm.')
+    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue. .remove -1 is the fastest way to remove the last song in the queue. If the bot isnt joining voice but says its queued music, use .connect to toggle the connection as it might still think it is conneced. I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
+    embed.set_footer(text='Contact Suran if you find any bugs.')
     await ctx.send(embed=embed)
