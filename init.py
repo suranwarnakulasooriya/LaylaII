@@ -113,7 +113,7 @@ class Log(Cog): # cog listeners for ranking
                     await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
                     await roleup(message)
         msg = message.content
-        if 'british' in msg or 'french' in msg or 'league of legends' in msg:
+        if 'british' in msg or 'britain' in msg or 'french' in msg or 'france' in msg or 'league of legends' in msg:
             await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has said a banned word, -69 trillion social credits.",color=0xe74c3c))
 
 class Copypastas: # create copypastas
