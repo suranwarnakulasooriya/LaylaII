@@ -248,6 +248,12 @@ async def jump(ctx,index:int):
     except IndexError: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
 
 
+@withrepr(lambda x: "Tell the bot that its not connected (use if manually disconnected).")
+@client.command(pass_context=True)
+async def disconnect(ctx):
+  if Bot.connected: await ctx.send(embed=discord.Embed(description="Disconnected.",color=0x3ce74c)); Bot.connected = False
+
+
 @withrepr(lambda x: "READ ME PLEASE.")
 @client.command(pass_context=True)
 async def readme(ctx):
@@ -258,7 +264,7 @@ async def readme(ctx):
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
     As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
     .remove -1 is the fastest way to remove the last song in the queue.
-    Please don't disconnect the bot from voice or use music commands in dms. Just use .leave. Disconnecting the bot forces me to restart it, don't make me do that.
+    If the bot isnt joining voice but says its queued music, use .connect to toggle the connection and it might still think it is conneced. Disconnecting the bot forces me to restart it, don't make me do that.
     I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)
