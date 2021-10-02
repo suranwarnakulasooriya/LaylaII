@@ -108,7 +108,7 @@ async def colors(ctx):
     for role in Roles: msg += role+', '
     msg += '.'
     await ctx.send(embed=discord.Embed(description=msg,color=0x99a3a4))
-    
+
 @withrepr(lambda x: 'Change your color role.')
 @client.command()
 async def setcolor(ctx,role:str):

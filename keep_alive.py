@@ -1,5 +1,5 @@
 # ==============================================================================
-# run this file to run the bot
+# keep the bot alive 24/7
 # ==============================================================================
 
 # ==============================================================================
@@ -28,13 +28,18 @@ SOFTWARE.
 '''
 # ==============================================================================
 
-from commands_help import *
-from keep_alive import keep_alive
+from flask import Flask
+from threading import Thread
 
-@client.event
-async def on_ready():
-    print('\nLayla II is online.\n')
+app = Flask('')
 
-if __name__ == '__main__':
-    keep_alive()
-    client.run(Bot.token)
+@app.route('/')
+def home():
+  return "Hi there hello."
+
+def run():
+  app.run(host='0.0.0.0',port=8080)
+
+def keep_alive():
+  t = Thread(target=run)
+  t.start()
