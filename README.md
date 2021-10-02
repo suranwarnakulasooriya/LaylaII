@@ -53,5 +53,6 @@ leaderboard() # show the top 10 users with the most xp
 givelevel(user,level) # (admin only) assign a level to a user (changes xp accordingly)
 changerate(rate) # (admin only) change the rate at which users level up
 getrate() # see the current level up rate
+colors() # see all valid colors
 setcolor() # change your color role
 ```
