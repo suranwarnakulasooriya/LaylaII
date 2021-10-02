@@ -101,6 +101,14 @@ async def changerate(ctx,rate:int):
 async def getrate(ctx):
     await ctx.send(embed=discord.Embed(description=f"Level up rate is currently {Bot.rate} messages.",color=0x99a3a4))
 
+@withrepr(lambda x: "See all valid colors.")
+@client.command()
+async def colors(ctx):
+    msg = 'Valid colors are: '
+    for role in Roles: msg += role+', '
+    msg += '.'
+    await ctx.send(embed=discord.Embed(description=msg,color=0x99a3a4))
+    
 @withrepr(lambda x: 'Change your color role.')
 @client.command()
 async def setcolor(ctx,role:str):
