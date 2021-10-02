@@ -41,7 +41,7 @@ FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_
 'options': '-y -vn'}
 
 def retrieve(arg): # return title, url, and duration of top result of search
-    with YoutubeDL({'format': 'bestaudio', 'noplaylist':'True','cookies':'cookies.txt'}) as ydl:
+    with YoutubeDL({'format': 'bestaudio', 'noplaylist':'True'}) as ydl:
         info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
     return (info['title'], info['formats'][0]['url'], info['duration'])
 
