@@ -65,7 +65,7 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      [stfu,ungovernable,nobodyasked,lmao,zook,nofucks,ugh,bullied,
                      zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
                      begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
-                     [readme,play,pause,resume,stop,loop,jump,np,next,queue,remove,clear,setcurrent,disconnect,leave],
+                     [readme,search,play,pause,resume,stop,loop,jump,np,next,queue,remove,clear,setcurrent,disconnect,leave],
                      [rank,leaderboard,getcooldown,getrate,colors,setcolor,cooldown,changerate,givelevel],
                      [hello,prefix,say,mock,wide,thicc,smol,aussie,leet])
 
@@ -78,4 +78,4 @@ async def help(ctx,*,arg=''):
     elif arg == 'music': await ctx.send(embed=help_command_.help_music)
     elif arg == 'ranking': await ctx.send(embed=help_command_.help_ranking)
     else:
-        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valid categories are copypastas, media, music, ranking, and misc.',color=0xe74c3c))
+        await ctx.send(embed=discord.Embed(description=f'There is no category named {arg}. Valid categories are copypastas, media, music, ranking, and misc.',color=red))

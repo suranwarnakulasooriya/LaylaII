@@ -151,6 +151,6 @@ async def prefix(ctx,p:str):
             with open('data.txt','w') as f: f.write(f"{p} {Bot.rate} {Bot.cooldown}"); f.close()
             Bot.prefix = p
             client.command_prefix = p
-            await ctx.send(embed=discord.Embed(description=f"Changed prefix to `{p}`",color=0x3ce74c))
-        else: await ctx.send(embed=discord.Embed(description="Prefix not valid. Must be between 1-6 chars.",color=0xe74c3c))
-    else: await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=0x3ce74c))
+            await ctx.send(embed=discord.Embed(description=f"Changed prefix to `{p}`",color=green))
+        else: await ctx.send(embed=discord.Embed(description="Prefix not valid. Must be between 1-6 chars.",color=red))
+    else: await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))

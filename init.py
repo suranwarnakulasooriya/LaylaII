@@ -10,7 +10,10 @@ import os # for environment variables
 
 import sys # to kill code
 import functools # for help command
-from youtube_dl import YoutubeDL # to search YouTube
+
+# different libraries are needed because only youtube-dl returns a URL that can be used by FFmpeg and only youtube_search can give multiple results
+from youtube_dl import YoutubeDL # to get top YouTube search result in play command
+from youtube_search import YoutubeSearch # to get multiple results in search command
 from discord import FFmpegPCMAudio # to stream audio
 
 # to keep alive 24/7
@@ -204,7 +207,13 @@ stopwatch = Stopwatch_() # for music
 copypastas = Copypastas()
 Roles = ['Invisible','Pink','Black','Gray','White','Brown','Purple','Lunar','Blue','Blurple','Ice','Turquoise','Green','Yellow','Orange','Red'] # valid color roles
 
+# embed colors
+grey = 0x99a3a4
+red = 0xe74c3c
+green = 0x3ce74c
+purple = 0xb07bff
+
 # initialize Discord client
-activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)
-client = commands.Bot(command_prefix=Bot.prefix,help_command=None)
+activity = discord.Activity(name='under development, please do not use', type=discord.ActivityType.playing)
+client = commands.Bot(command_prefix=Bot.prefix,help_command=None,activity=activity)
 client.add_cog(Log(client,Bot))

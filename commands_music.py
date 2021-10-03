@@ -19,6 +19,12 @@ def retrieve(arg): # return title, url, and duration of top result of search
         info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
     return (info['title'], info['formats'][0]['url'], info['duration'])
 
+def to_seconds(timestr): # convert hh:mm:ss to raw seconds
+    seconds= 0
+    for part in timestr.split(':'):
+        seconds= seconds*60 + int(part, 10)
+    return seconds
+
 def get_time(sec,Q=False,l=0): # convert time from raw seconds into hh:mm:ss
     dur = str(td(seconds=sec))
     for i in range(len(dur)):
@@ -30,7 +36,7 @@ def get_time(sec,Q=False,l=0): # convert time from raw seconds into hh:mm:ss
     # always at least show the single minutes
     if len(dur) == 1: dur = '0:0'+dur
     elif len(dur) == 2: dur = '0:'+dur
-    # if this is for the queue, make sure the time is always aligned
+    # if this is for the queue (or search), make sure the time is always aligned
     if Q:
         if len(dur) > 8: dur = 'OVER'
         dur = ' '*(65-l-len(dur)) + dur
@@ -41,41 +47,53 @@ def trim_title(name): # trim the title if it is too long (to keep times aligned 
     if len(name) > 62: return name[:60]+'...'
     else: return name
 
-def wrap_index(index,L):
+def wrap_index(index,L): # make index positive if it is negative
     if 0 <= index < len(L): return index
     elif 0 > index: return len(L)+index
 
-@withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Aliases = p.')
+
+@withrepr(lambda x: "Search top 10 results.")
+@client.command(pass_context=True)
+async def search(ctx,*,query): # return title, duration, and url of top 10 search results
+    #info = YoutubeSearch(query,max_results=10).to_dict() # first use turns up nothing, has to run again
+    info = YoutubeSearch(query,max_results=10).to_dict()
+    msg = '```'
+    for e,i in enumerate(info):
+        msg += f"{trim_title(i['title'])}  {get_time(to_seconds(i['duration']),True,len(trim_title(i['title'])))}  https://www.youtube.com{i['url_suffix']}\n"
+    msg += '```'
+    # sometimes the search comes up emoty for no reason, searching the same thing again fixes it
+    if msg == '``````': await ctx.send(embed=discord.Embed(description='Search failed. Search the same thing again and it should work ¯\_(ツ)_/¯.',color=red))
+    else: await ctx.send(msg)
+
+
+@withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Alias = p.')
 @client.command(aliases=['p'],pass_context=True)
 async def play(ctx, *, query : str):
     if not ctx.author.voice:
-        await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=0xe74c3c))
+        await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=red))
 
     elif not Bot.connected: # connect to VC if not already
         try:
-            channel = ctx.author.voice.channel
-            voice = await channel.connect()
-            Bot.connected = True
-        except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=0xe74c3c))
+            await ctx.author.voice.channel.connect(); Bot.connected = True
+        except: await ctx.send(embed=discord.Embed(description="Something went wrong.",color=red))
 
     if ctx.author.voice and Bot.connected:
         if len(Q.queue) > 19:
-            await ctx.send(embed=discord.Embed(description='Queue is maxed out.',color=0xe74c3c))
+            await ctx.send(embed=discord.Embed(description='Queue is maxed out.',color=red))
         else:
-            if 'https' in query: # if query is a url, remove extraneous parts of url
+            if 'https' in query: # if query is a url, remove extraneous parts of url (timestamps and/or playlist info)
                 url = query
                 try: url = url[:url.index('&')]
                 except ValueError: pass
 
-            # search youtube for query (searching a url will return the url)
+            # search youtube for query (searching a url will return the url so code can be reused)
             title, url, duration = retrieve(query)
             dur = get_time(duration,False)
-            FFMPEG_OPTS['options'] = '-vn'
             if len(Q.queue) == Q.current == 0:
-                await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=0x3ce74c))
+                await ctx.send(embed=discord.Embed(description=f"Now Playing {title} [{dur}] [{ctx.author.mention}]",color=green))
                 stopwatch.Reset(); stopwatch.Start()
                 Q.loop = False
-            else: await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=0x99a3a4))
+            else: await ctx.send(embed=discord.Embed(description=f"Queued {title} [{dur}] [{ctx.author.mention}]",color=grey))
 
             Q.queue.append(Song(title,url,dur,ctx.author.mention,duration)) # add song to queue
             if Q.current == len(Q.queue)-1:
@@ -83,10 +101,10 @@ async def play(ctx, *, query : str):
                 except: pass
 
 
-@withrepr(lambda x: 'Show the queue. Aliases = q.')
+@withrepr(lambda x: 'Show the queue. Alias = q.')
 @client.command(aliases=['q'],pass_context=True)
 async def queue(ctx):
-    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='Queue is empty.',color=0x99a3a4))
+    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='Queue is empty.',color=grey))
     else:
         message = "```"
         for i,song in enumerate(Q.queue):
@@ -100,7 +118,7 @@ async def queue(ctx):
         await ctx.send(message)
 
 
-@withrepr(lambda x: 'Join the voice channel of the author. Aliases = j.')
+@withrepr(lambda x: 'Join the voice channel of the author. Alias = j.')
 @client.command(aliases=['j'],pass_context=True)
 async def join(ctx):
     if not Bot.connected and ctx.author.voice:
@@ -108,7 +126,7 @@ async def join(ctx):
         voice = await channel.connect()
         Bot.connected = True
     elif not Bot.connected and not ctx.author.voice:
-        await ctx.send(embed=discord.Embed(description='You need to be in a voice channel.',color=0xe74c3c))
+        await ctx.send(embed=discord.Embed(description='You need to be in a voice channel.',color=red))
 
 
 @withrepr(lambda x: 'Leave the voice channel. Aliases = die,l.')
@@ -119,7 +137,7 @@ async def leave(ctx):
         await voice.disconnect()
         Bot.connected = False
         Q.queue = []; stopwatch.Reset(); Q.current = 0
-    else: await ctx.send(embed=discord.Embed(description='No voice channel to leave from.',color=0xe74c3c))
+    else: await ctx.send(embed=discord.Embed(description='No voice channel to leave from.',color=red))
 
 
 @withrepr(lambda x: 'Pause the current song.')
@@ -127,7 +145,7 @@ async def leave(ctx):
 async def pause(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
     if voice.is_playing(): voice.pause(); stopwatch.Pause()
-    else: await ctx.send(embed=discord.Embed(description='Already paused.',color=0xe74c3c))
+    else: await ctx.send(embed=discord.Embed(description='Already paused.',color=red))
 
 
 @withrepr(lambda x: 'Resume the current song.')
@@ -135,7 +153,7 @@ async def pause(ctx):
 async def resume(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
     if voice.is_paused(): voice.resume(); stopwatch.Resume()
-    else: await ctx.send(embed=discord.Embed(description='Not already paused.',color=0xe74c3c))
+    else: await ctx.send(embed=discord.Embed(description='Not already paused.',color=red))
 
 
 @withrepr(lambda x: 'Stops the current song.')
@@ -154,9 +172,9 @@ async def next(ctx):
     if not Q.loop: Q.current += 1
     try:
         ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset())
-        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
+        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=green))
         stopwatch.Reset(); stopwatch.Start()
-    except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=0xe74c3c))
+    except IndexError: await ctx.send(embed=discord.Embed(description="No more songs to play.",color=red))
 
 
 @withrepr(lambda x: 'Removes a given index from the queue. Aliases = r,rm,rmv.')
@@ -166,35 +184,35 @@ async def remove(ctx,index:int):
         if index != Q.current:
             song = Q.queue.pop(index)
             if index < Q.current and index >= 0: Q.current -= 1
-            await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=0x99a3a4))
-        else: await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=0xe74c3c))
-    except: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+            await ctx.send(embed=discord.Embed(description=f"Removed Index {index}: {song.title}",color=grey))
+        else: await ctx.send(embed=discord.Embed(description="Pls don't do that.",color=red))
+    except: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=red))
 
 
 @withrepr(lambda x: "Clear the queue (use if queue is broken). Aliases = cl,c.")
 @client.command(aliases=['cl','c'],pass_context=True)
 async def clear(ctx):
     Q.queue = []; Q.current = 0
-    await ctx.send(embed=discord.Embed(description="Queue has been cleared.",color=0x99a3a4))
+    await ctx.send(embed=discord.Embed(description="Queue has been cleared.",color=grey))
 
 
 @withrepr(lambda x: 'Toggle song loop.')
 @client.command(pass_context=True)
 async def loop(ctx):
-    if Q.loop: Q.loop = False; await ctx.send(embed=discord.Embed(description='Loop stopped.',color=0x99a3a4))
-    else: Q.loop = True; await ctx.send(embed=discord.Embed(description='Now looping current song.',color=0x99a3a4))
+    if Q.loop: Q.loop = False; await ctx.send(embed=discord.Embed(description='Loop stopped.',color=grey))
+    else: Q.loop = True; await ctx.send(embed=discord.Embed(description='Now looping current song.',color=grey))
 
 
 @withrepr(lambda x: "See the current song.")
 @client.command(aliases=['nowplaying'],pass_context=True)
 async def np(ctx):
-    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
-    elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime: await ctx.send(embed=discord.Embed(description='No song playing.',color=0x99a3a4))
+    if len(Q.queue) == 0: await ctx.send(embed=discord.Embed(description='No song playing.',color=grey))
+    elif stopwatch.GetTime() >= Q.queue[Q.current].rawtime: await ctx.send(embed=discord.Embed(description='No song playing.',color=grey))
     else:
         p = int(stopwatch.GetTime()/Q.queue[Q.current].rawtime*25)
         bar = '▬'*p + ':purple_circle:' + '▬'*(25-p)
         await ctx.send(embed=discord.Embed(description=f"""{Q.queue[Q.current].title} [{Q.queue[Q.current].request}] [{get_time(stopwatch.GetTime(),False)}/{Q.queue[Q.current].length}]\n
-        {bar}""",color=0x99a3a4))
+        {bar}""",color=grey))
 
 
 @withrepr(lambda x: "Manually set the current song if it isn't correct.")
@@ -203,7 +221,7 @@ async def setcurrent(ctx,index:int):
     if index < len(Q.queue):
         Q.current = index
         await ctx.send(embed=discord.Embed(description=f"Current Song Set to Index {index}: {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]"))
-    else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+    else: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=red))
 
 
 @withrepr(lambda x: "Jump to a position in the queue.")
@@ -217,15 +235,15 @@ async def jump(ctx,index:int):
         voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
         voice.stop(); stopwatch.Reset()
         ctx.guild.voice_client.play(FFmpegPCMAudio(Q.queue[Q.current].url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset())
-        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=0x3ce74c))
+        await ctx.send(embed=discord.Embed(description=f"Now Playing {Q.queue[Q.current].title} [{Q.queue[Q.current].length}] [{Q.queue[Q.current].request}]",color=green))
         stopwatch.Start()
-    except IndexError: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=0xe74c3c))
+    except IndexError: await ctx.send(embed=discord.Embed(description="There's no song at that index.",color=red))
 
 
 @withrepr(lambda x: "Tell the bot that its not connected (use if manually disconnected).")
 @client.command(pass_context=True)
 async def disconnect(ctx):
-  if Bot.connected: await ctx.send(embed=discord.Embed(description="Disconnected.",color=0x3ce74c)); Bot.connected = False
+  if Bot.connected: await ctx.send(embed=discord.Embed(description="Disconnected.",color=green)); Bot.connected = False
 
 
 @withrepr(lambda x: "READ ME PLEASE.")
@@ -236,9 +254,9 @@ async def readme(ctx):
     If the audio never starts, it might have been randomly denied (yes it happens, it should say the song is over in the queue), requeue the song and skip to it (.next).\n
     Sometimes the audio prematurely cuts off, this might be because the video is buffering, so wait for a little bit. If the song doesn't continue, requeue the song and skip to it.\n
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
-    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
-    .remove -1 is the fastest way to remove the last song in the queue.
+    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue. The results for the search commands are inconsistent.
+    .remove -1 is the fastest way to remove the last song in the queue. The search panel occasionally comes up empty, this is also a package issue, just search the same thing again.
     If the bot isnt joining voice but says its queued music, use .connect to toggle the connection and it might still think it is conneced. Disconnecting the bot forces me to restart it, don't make me do that.
-    I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
+    I would also advise against sending commands in quick succession, just to be safe.""",color=purple)
     embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)

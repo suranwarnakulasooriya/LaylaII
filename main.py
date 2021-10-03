@@ -4,6 +4,7 @@
 
 from commands_help import *
 '''
+# uncomment if you want to run in cloud
 app = Flask('')
 
 @app.route('/')
@@ -22,5 +23,5 @@ async def on_ready():
     print('\nLayla II is online.\n')
 
 if __name__ == '__main__':
-    #keep_alive()
+    #keep_alive() # uncomment if you want to run in cloud
     client.run(Bot.token)
