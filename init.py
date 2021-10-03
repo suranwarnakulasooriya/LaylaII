@@ -2,32 +2,6 @@
 # start everything up
 # ==============================================================================
 
-# ==============================================================================
-'''
-MIT License
-
-Copyright (c) 2021 Suran Warnakulasooriya
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-'''
-# ==============================================================================
-
 # discord.py
 import discord
 from discord.ext import commands
@@ -39,17 +13,22 @@ import functools # for help command
 from youtube_dl import YoutubeDL # to search YouTube
 from discord import FFmpegPCMAudio # to stream audio
 
+# to keep alive 24/7
+#from flask import Flask
+#from threading import Thread
+
 # for music duration and cooldown
 from datetime import timedelta as td
 import time
 
 class Bot_Info: # class with basic bot info
-    def __init__(self,prefix,token):
-        self.prefix = prefix
+    def __init__(self,token):
         self.token = token
         self.connected = False
-        with open("cooldown.txt",'r') as f: self.cooldown = int(f.readline()); f.close()
-        with open("rate.txt",'r') as f: self.rate = int(f.readline()); f.close() # rate at which users level up relative to messages sent
+        with open('data.txt','r') as f: data = f.read().split(); f.close()
+        self.prefix = data[0]
+        self.rate = int(data[1])
+        self.cooldown = int(data[2])
         self.lvlroles = {}
 
 async def roleup(message): # thresholds and role names
@@ -206,10 +185,9 @@ def withrepr(reprfun):
     return _wrap
 
 # initialize Bot object
-with open('prefix.txt','r') as f: bot_prefix = f.read(); f.close()
 with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close() # read token from local file
 # bot_token = os.environ['TOKEN'] # read token as environment variable
-Bot = Bot_Info(bot_prefix,bot_token)
+Bot = Bot_Info(bot_token)
 
 # initialize dict of user ranking objects
 U = {}
@@ -228,5 +206,5 @@ Roles = ['Invisible','Pink','Black','Gray','White','Brown','Purple','Lunar','Blu
 
 # initialize Discord client
 activity = discord.Activity(name='for that c&d', type=discord.ActivityType.listening)
-client = commands.Bot(command_prefix=bot_prefix,help_command=None)
+client = commands.Bot(command_prefix=Bot.prefix,help_command=None)
 client.add_cog(Log(client,Bot))

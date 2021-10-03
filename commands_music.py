@@ -2,32 +2,6 @@
 # music
 # ==============================================================================
 
-# ==============================================================================
-'''
-MIT License
-
-Copyright (c) 2021 Suran Warnakulasooriya
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-'''
-# ==============================================================================
-
 from init import *
 
 # set ytdl and ffmpeg options
@@ -262,6 +236,9 @@ async def readme(ctx):
     If the audio never starts, it might have been randomly denied (yes it happens, it should say the song is over in the queue), requeue the song and skip to it (.next).\n
     Sometimes the audio prematurely cuts off, this might be because the video is buffering, so wait for a little bit. If the song doesn't continue, requeue the song and skip to it.\n
     Sometimes the current song (marked by <== in the queue) is not accurate. Try to use .setcurrent to correct it. If it doesnt work, clear the queue.\n
-    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue. .remove -1 is the fastest way to remove the last song in the queue. If the bot isnt joining voice but says its queued music, use .connect to toggle the connection as it might still think it is conneced. I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
-    embed.set_footer(text='Contact Suran if you find any bugs.')
+    As far as I know, clearing the queue always solves these issues. Using .leave also clears the queue.
+    .remove -1 is the fastest way to remove the last song in the queue.
+    If the bot isnt joining voice but says its queued music, use .connect to toggle the connection and it might still think it is conneced. Disconnecting the bot forces me to restart it, don't make me do that.
+    I would also advise against sending commands in quick succession, just to be safe.""",color=0xb07bff)
+    embed.set_footer(text='Always remember: this bot is better than Rythm.')
     await ctx.send(embed=embed)

@@ -2,32 +2,6 @@
 # ranking
 # ==============================================================================
 
-# ==============================================================================
-'''
-MIT License
-
-Copyright (c) 2021 Suran Warnakulasooriya
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-'''
-# ==============================================================================
-
 from init import *
 
 @withrepr(lambda x: 'See your rank in this server.')
@@ -44,8 +18,7 @@ async def cooldown(ctx,c:int):
         await ctx.send(embed=discord.Embed(description="Cooldown out of range, give range between 1 and 10.",color=0xe74c3c))
     else:
         if ctx.author.guild_permissions.administrator:
-            with open("cooldown.txt",'w') as f:
-                f.write(str(c)); f.close()
+            with open("data.txt",'w') as f: f.write(f"{Bot.prefix} {Bot.rate} {c}"); f.close()
             await ctx.send(embed=discord.Embed(description=f"Cooldown set from {Bot.cooldown} to {c}.",color=0x3ce74c))
             Bot.cooldown = c
         else:
@@ -89,7 +62,7 @@ async def changerate(ctx,rate:int):
         if rate < 10 or rate > 800:
             await ctx.send(embed=discord.Embed(description="Rate out of range, pick a range between 10-800",color=0xe74c3c))
         else:
-            with open('rate.txt','w') as f: f.write(str(rate)); f.close()
+            with open('data.txt','w') as f: f.write(f"{Bot.prefix} {rate} {Bot.cooldown}"); f.close()
             Bot.rate = rate
             for user in U: U[user].rate = rate
             await ctx.send(embed=discord.Embed(description=f"Changed level up rate to {rate}.",color=0x3ce74c))
