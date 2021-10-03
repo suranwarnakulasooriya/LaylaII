@@ -1,5 +1,5 @@
 # Layla II
-Layla II is a Discord bot intended to replace the Groovy and Rythm bots that were shut down by YouTube, with ranking features included. Python 3.8+, discord.py, youtube-dl, and ffmpeg are needed to run the bot. This bot is not capable of functioning in multiple servers and is designed with the intent for use in a single server, both for ease of programming and to not be abused like Groovy and Rythm were.
+Layla II is a Discord bot intended to replace the Groovy and Rythm bots that were shut down by YouTube, with ranking features included. Python 3.8+, discord.py, youtube-dl, youtube_search, and ffmpeg are needed to run the bot. This bot is not capable of functioning in multiple servers and is designed with the intent for use in a single server, both for ease of programming and to not be abused like Groovy and Rythm were.
 Layla II is named after an old bot named Layla that I attempted to write in discord.js. Though that went nowhere, the removal of Groovy and Rythm inspired me to reattempt it, this time in my native language, Python.
 
 ## Features
@@ -12,14 +12,15 @@ The bot has other extraneous commands that I added for fun, including text manip
 ## Using Layla II
 
 ### Install Packages
-A Python interpreter, `discord.py`, `youtube-dl`, and `ffmpeg` are needed to run the bot. The most recent stable version of Python is recommended at [python.org](https://www.python.org/downloads/). 3.8 is the oldest usable version. discord.py can be installed using `pip` with Rapptz' guide on his [GitHub page](https://github.com/Rapptz/discord.py). `discord.py[voice]` is needed for voice support. The `PyNaCl` library should be automatically installed with discord.py, but in case it isnt, install it separately.
+A Python interpreter, `discord.py`, `youtube-dl`, `youtube_search`, and `ffmpeg` are needed to run the bot. The most recent stable version of Python is recommended at [python.org](https://www.python.org/downloads/). 3.8 is the oldest usable version. discord.py can be installed using `pip` with Rapptz' guide on his [GitHub page](https://github.com/Rapptz/discord.py). `discord.py[voice]` is needed for voice support. The `PyNaCl` library should be automatically installed with discord.py, but in case it isnt, install it separately.
 ```
-python3 -m pip install --upgrade pip
-pip install discord.py
-pip install -U 'discord.py[voice]'
-pip install PyNaCl
-pip install youtube-dl
-pip install ffmpeg
+python3 -m pip install --upgrade pip # upgrade pip
+pip install discord.py # connect to Discord API
+pip install -U 'discord.py[voice]' # Discord voice support
+pip install PyNaCl # also Discord voice support
+pip install youtube-dl # get top result of search (doesn't return multiple results)
+pip install youtube_search # get top ten results (doesn't return URLs that ffmpeg can use)
+pip install ffmpeg # stream audio
 ```
 
 ### Create Discord Bot
@@ -29,7 +30,7 @@ To create your bot, go to the [Discord developer portal](https://discord.com/dev
 After this, get the code from this repo is whatever way you wish and edit `data.txt` to whatever starting conditions you want. It is set up as prefix, rate, cooldown. Pick a number between 1-10 for the cooldown, a number between 10-800 for the rate, and any 1-6 character string for the prefix. `users.txt` should be left empty. The bot is run by giving its token to the code, allowing it to connect to Discord's bot API. In the developer portal, go back to the `Bot` tab and copy its token. The token is the bot's password, so don't share it with anyone. You can either save the token as an environment variable or on a local txt file. Check the `Deploy from the Cloud` section for the environment solution. For the txt file, create a text file somewhere on your local machine that you can read from in `init.py`. The ranking roles and thresholds are hard coded in `init.py` in the `roleup` method. A template set of ranking roles is given here and is where you would add the ranking roles for your server. The message cooldown and prefix can be changed with the `cooldown` and `prefix` commands respectively. The rate at which users level up is proportional to their xp, as `(xp needed to level up) = (rate of level up) * (current level + 1)`. The rate of level up can also be changed with the `changerate` command. These commands can only be used by server administrators. If you want to further make your bot your own by changing the code, you are free to do so. If so, I suggest reading the [Layla II Verbose Documentation](https://github.com/suranwarnakulasooriya/LaylaII/wiki/Layla-II-Verbose-Documentation) to better understand the ins and outs of the code.
 
 ### Deploy from the Cloud
-You can of course run the bot from your local machine, but it will be difficult to run it 24/7. You could use a raspberry pi or a cloud hosting service. I used [replit](https://replit.com/), a free cloud hosting service. Go to replit and log in or sign up. Click `Create repl` and give it a name (this name is irrelevant). Select `Python` as the language. Go to the `Shell` and install the packages mentioned above. Add the code files into the repl by either copy-and-paste or GitHub integration. Go to the `Secrets` tab and create an environment variable. Set the `key` field to "TOKEN" and the `value` field to your bot's token. Go to `init.py` and make sure that the token is being read as an environment variable. Configure the `Run` button to `python3 main.py`, allowing you to run the bot from the click of a button. The bot will still go offline if you close the replit tab. To run forever, go to [uptimerobot.com](https://uptimerobot.com/) and log in or sign up. Go to the dashboard and click `Add New Monitor`. It will ask for a url. This url will be pigned every 5 minutes to keep it from going to sleep. Run the bot in replit and you will see a window with a url at the top. This url is the replit server hosting the bot. Copy this url and paste it into uptimerobot. Once the monitor is added, uptimerobot will ping the replit server every 5 mins to keep it from going to sleep, as replit servers turn off if they are not used for 1 hour. Now you can close the replit and uptimerobot tabs and the bot will remain alive at all times. You can turn the bot offline by pressing the stop button in replit.
+You can of course run the bot from your local machine, but it will be difficult to run it 24/7. You could use a raspberry pi or a cloud hosting service. I used [replit](https://replit.com/), a free cloud hosting service. Go to replit and log in or sign up. Click `Create repl` and give it a name (this name is irrelevant). Select `Python` as the language and Go to the `Shell` and install the packages mentioned above. Add the code files into the repl by either copy-and-paste or GitHub integration. Make sure that the flask and threading imports are uncommented. Go to the `Secrets` tab and create an environment variable. Set the `key` field to "TOKEN" and the `value` field to your bot's token. Go to `init.py` and make sure that the token is being read as an environment variable. Configure the `Run` button to `python3 main.py`, allowing you to run the bot from the click of a button. The bot will still go offline if you close the replit tab. To run forever, go to [uptimerobot.com](https://uptimerobot.com/) and log in or sign up. Go to the dashboard and click `Add New Monitor`. It will ask for a url. This url will be pigned every 5 minutes to keep it from going to sleep. Run the bot in replit and you will see a window with a url at the top. This url is the replit server hosting the bot. Copy this url and paste it into uptimerobot. Once the monitor is added, uptimerobot will ping the replit server every 5 mins to keep it from going to sleep, as replit servers turn off if they are not used for 1 hour. Now you can close the replit and uptimerobot tabs and the bot will remain alive at all times. You can turn the bot offline by pressing the stop button in replit.
 
 ### Troubleshooting
 Occasionally, the music commands will fail to work. youtube-dl, ffmpeg, and discord.py as a whole require a good internet connection to run, as a bad connection may prevent the bot from joining voice at all. The time it takes for the audio libraires to retrive the vidoes varies but is usually close to proportional with the length of the song. Sometimes the ffmpeg request is denied entirely and the audio won't play (the output window will show this). Requeue the song and skip to it to make it play normally. If in any case the current song (labeled by "<==" in the queue) is not correct, use `setcurrent` to fix it. If you manually disconnected the bot from voice, use `disconnect` to set the `Bot.connected` value to False as it does not happen automatically. If you don't know how to solve an audio issue, use `leave` to clear the queue and leave the voice channel, then rejoin the bot. If this does not work, the bot needs to be restarted. Disconecting the bot from a voice channel or using music/ranking commands in DMs can potentially cause this. 
@@ -37,7 +38,8 @@ Occasionally, the music commands will fail to work. youtube-dl, ffmpeg, and disc
 ### Commands List (Music & Ranking)
 ```python
 # Music
-play(query) # plays + enqueues the queried song, will adjust if not in voice or if a song is already playing
+search(query) # shows the top 10 youtube results for the query and their urls, plug the url you want into the play command
+play(query) # plays + enqueues the queried song, works with searched and urls, will adjust if not in voice or if a song is already playing
 queue() # shows the queue
 join() # joins the voice channel of the author 
 leave() # leave voice and clear the queue
