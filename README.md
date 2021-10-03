@@ -18,7 +18,7 @@ python3 -m pip install --upgrade pip
 pip install discord.py
 pip install -U 'discord.py[voice]'
 pip install PyNaCl
-pip isntall youtube-dl
+pip install youtube-dl
 pip install ffmpeg
 ```
 
