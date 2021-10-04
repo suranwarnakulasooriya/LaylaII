@@ -25,7 +25,7 @@ def to_seconds(timestr): # convert hh:mm:ss to raw seconds
         seconds= seconds*60 + int(part, 10)
     return seconds
 
-def get_time(sec,Q=False,l=0): # convert time from raw seconds into hh:mm:ss
+def get_time(sec,Q=False,l=0,ln=65): # convert time from raw seconds into hh:mm:ss
     dur = str(td(seconds=sec))
     for i in range(len(dur)):
         if dur[i] not in ['0',':']:
@@ -39,36 +39,19 @@ def get_time(sec,Q=False,l=0): # convert time from raw seconds into hh:mm:ss
     # if this is for the queue (or search), make sure the time is always aligned
     if Q:
         if len(dur) > 8: dur = 'OVER'
-        dur = ' '*(65-l-len(dur)) + dur
-        while l+len(dur) < 68: dur = ' '+dur
+        dur = ' '*(ln-l-len(dur)) + dur
+        while l+len(dur) < ln+3: dur = ' '+dur
     return dur
 
-def trim_title(name): # trim the title if it is too long (to keep times aligned in queue)
-    if len(name) > 62: return name[:60]+'...'
+def trim_title(name,l=62): # trim the title if it is too long (to keep times aligned in queue)
+    if len(name) > l: return name[:l-2]+'...'
     else: return name
 
 def wrap_index(index,L): # make index positive if it is negative
     if 0 <= index < len(L): return index
     elif 0 > index: return len(L)+index
 
-
-@withrepr(lambda x: "Search top 10 results.")
-@client.command(pass_context=True)
-async def search(ctx,*,query): # return title, duration, and url of top 10 search results
-    #info = YoutubeSearch(query,max_results=10).to_dict() # first use turns up nothing, has to run again
-    info = YoutubeSearch(query,max_results=10).to_dict()
-    msg = '```'
-    for e,i in enumerate(info):
-        msg += f"{trim_title(i['title'])}  {get_time(to_seconds(i['duration']),True,len(trim_title(i['title'])))}  https://www.youtube.com{i['url_suffix']}\n"
-    msg += '```'
-    # sometimes the search comes up emoty for no reason, searching the same thing again fixes it
-    if msg == '``````': await ctx.send(embed=discord.Embed(description='Search failed. Search the same thing again and it should work ¯\_(ツ)_/¯.',color=red))
-    else: await ctx.send(msg)
-
-
-@withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Alias = p.')
-@client.command(aliases=['p'],pass_context=True)
-async def play(ctx, *, query : str):
+async def enqueue(ctx,query): # effectively the play command but separate since it's used in result and play
     if not ctx.author.voice:
         await ctx.send(embed=discord.Embed(description="You need to be in a voice channel.",color=red))
 
@@ -99,6 +82,39 @@ async def play(ctx, *, query : str):
             if Q.current == len(Q.queue)-1:
                 try: ctx.guild.voice_client.play(FFmpegPCMAudio(url, **FFMPEG_OPTS),after=lambda e:stopwatch.Reset()) # play song
                 except: pass
+
+@withrepr(lambda x: "Get top 10 search results.")
+@client.command(pass_context=True)
+async def search(ctx,*,query): # return title, duration, and url of top 10 search results
+    info = YoutubeSearch(query,max_results=10).to_dict()
+    msg = '```'
+    for e,i in enumerate(info):
+        msg += f"{e}) {trim_title(i['title'],60)}  {get_time(to_seconds(i['duration']),True,len(trim_title(i['title'],60)),63)}\n"
+    msg += '```'
+    # sometimes the search comes up emoty for no reason, searching the same thing again fixes it
+    if msg == '``````': await ctx.send(embed=discord.Embed(description='Search failed. Search the same thing again and it should work ¯\_(ツ)_/¯.',color=red))
+    else:
+        msg += 'To play a song from this list, use result <index>.'
+        await ctx.send(msg)
+        Q.search = []
+        for song in info: Q.search.append('https://www.youtube.com'+song['url_suffix'])
+
+
+@withrepr(lambda x: "Play the index of a search result. Alias = res.")
+@client.command(aliases=['res'],pass_context=True)
+async def result(ctx,index:int):
+    if Q.search == []:
+        await ctx.send(embed=discord.Embed(description="There are no search results, use search to get some.",color=red))
+    elif index < 0 or index > 9:
+        await ctx.send(embed=discord.Embed(description="Index out of range.",color=red))
+    else:
+        await enqueue(ctx,Q.search[index])
+
+
+@withrepr(lambda x: 'Play the audio of a YouTube URL or from YouTube search. Alias = p.')
+@client.command(aliases=['p'],pass_context=True)
+async def play(ctx, *, query : str):
+    await enqueue(ctx,query)
 
 
 @withrepr(lambda x: 'Show the queue. Alias = q.')
@@ -192,7 +208,7 @@ async def remove(ctx,index:int):
 @withrepr(lambda x: "Clear the queue (use if queue is broken). Aliases = cl,c.")
 @client.command(aliases=['cl','c'],pass_context=True)
 async def clear(ctx):
-    Q.queue = []; Q.current = 0
+    Q.queue = []; Q.current = 0; Q.search = []
     await ctx.send(embed=discord.Embed(description="Queue has been cleared.",color=grey))
 
 

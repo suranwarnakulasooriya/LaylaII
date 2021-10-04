@@ -64,7 +64,7 @@ async def changerate(ctx,rate:int):
         else:
             with open('data.txt','w') as f: f.write(f"{Bot.prefix} {rate} {Bot.cooldown}"); f.close()
             Bot.rate = rate
-            for user in U: U[user].rate = rate
+            for user in U: U[user].rate = rate; U[user].xp = U[user].lvl*rate+min(rate,U[user].nxp)
             await ctx.send(embed=discord.Embed(description=f"Changed level up rate to {rate}.",color=green))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))

@@ -148,7 +148,7 @@ async def sunfish(ctx):
 @client.command()
 async def beans(ctx):
     await ctx.send(copypastas.beans)
-    
+
 @withrepr(lambda x: 'Change the prefix (admin only).')
 @client.command()
 async def prefix(ctx,p:str):
