@@ -207,7 +207,6 @@ def withrepr(reprfun):
 # initialize Bot object
 with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close() # read token from local file
 #bot_token = os.environ['TOKEN'] # read token as environment variable
-#bot_token = "ODk0MjIwMDEzNTE3NTUzNjc1.YVm1SQ.3HbZq8OouaRNrcOhV6nR3SGVzeU"
 Bot = Bot_Info(bot_token)
 
 # initialize dict of user ranking objects
