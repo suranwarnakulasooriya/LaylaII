@@ -38,7 +38,8 @@ Occasionally, the music commands will fail to work. youtube-dl, ffmpeg, and disc
 ### Commands List (Music & Ranking)
 ```python
 # Music
-search(query) # shows the top 10 youtube results for the query and their urls, plug the url you want into the play command
+search(query) # shows the top 10 youtube results for the query
+result(index) # plays the index of a search result
 play(query) # plays + enqueues the queried song, works with searched and urls, will adjust if not in voice or if a song is already playing
 queue() # shows the queue
 join() # joins the voice channel of the author 
