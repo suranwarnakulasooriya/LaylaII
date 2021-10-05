@@ -59,8 +59,8 @@ async def givelevel(ctx,user:discord.User=None,lvl=0):
 @client.command()
 async def changerate(ctx,rate:int):
     if ctx.author.guild_permissions.administrator:
-        if rate < 10 or rate > 800:
-            await ctx.send(embed=discord.Embed(description="Rate out of range, pick a range between 10-800",color=red))
+        if rate < 50 or rate > 1000:
+            await ctx.send(embed=discord.Embed(description="Rate out of range, pick a range between 50-1000",color=red))
         else:
             with open('data.txt','w') as f: f.write(f"{Bot.prefix} {rate} {Bot.cooldown}"); f.close()
             Bot.rate = rate
