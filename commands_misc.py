@@ -149,6 +149,12 @@ async def sunfish(ctx):
 async def beans(ctx):
     await ctx.send(copypastas.beans)
 
+# command olympic
+@withrepr(lambda x: "Best ship ever...")
+@client.command()
+async def olympic(ctx):
+    await ctx.send(copypastas.olympic)
+
 @withrepr(lambda x: 'Change the prefix (admin only).')
 @client.command()
 async def prefix(ctx,p:str):
