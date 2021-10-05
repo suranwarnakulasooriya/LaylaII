@@ -9,7 +9,7 @@ from init import *
 async def rank(ctx):
     if ctx.author.id in U:
         user = U[ctx.author.id]
-        await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate*(user.lvl+1)}] until level {user.lvl+1}.",color=ctx.author.color))
+        await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate}] until level {user.lvl+1}.",color=ctx.author.color))
 
 @withrepr(lambda x: 'Change the message cooldown (admin only).')
 @client.command(aliases=['cool'])
@@ -64,7 +64,7 @@ async def changerate(ctx,rate:int):
         else:
             with open('data.txt','w') as f: f.write(f"{Bot.prefix} {rate} {Bot.cooldown}"); f.close()
             Bot.rate = rate
-            for user in U: U[user].rate = rate; U[user].xp = sum(list(range(U[user].lvl+1)))*rate+U[user].nxp
+            for user in U: U[user].rate = rate; U[user].xp = U[user].lvl*rate+min(rate,U[user].nxp)
             await ctx.send(embed=discord.Embed(description=f"Changed level up rate to {rate}.",color=green))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))
