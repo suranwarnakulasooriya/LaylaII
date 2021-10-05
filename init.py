@@ -183,7 +183,7 @@ class User: # to store user ranking data
             return True
         else: return False
     def lvlup(self):
-        if self.nxp >= self.rate*(self.lvl+1)-1:
+        if self.nxp >= self.rate:
             self.lvl += 1
             self.nxp = 0
             return True
