@@ -123,6 +123,20 @@ On the days before Monday I thought "Will we marry the girlfriend? Well it might
 But now I am so sad she baked them beans. I am consider to end our relations and not be the boyfriend and girlfriend any more. But, is my idea wrong? Could my girlfriend make promise to not bake the beans? I do not know what doing to do and how to feel forgiving on her.
 What can I do on this situation I said here? (In the text I write above this.)
 Thank you."""
+        self.olympic = """would you rather have...?
+**Soulmate **                                                      **Royal Mail Triple Screw Steamer Olympic**
+- cant drive                                                    - top speed of 23 knots and highly maneuverable
+- can get injured, mortal                             - safety rated for 6 compartment flooding, double hull, 68 lifeboats, survives 4 collisions
+- annoying friends                                        - crew can and will mutiny if not given proper treatment
+- annoying inlaws                                         - had 2 badass sisters and 2 German running mates
+- will cheat on you if you get drafted       - a war veteran
+- disloyal in general                                     - serves for 24 years
+- attractiveness debatable                         - 2 grand staircases, cafe parisien, full length promenade deck, most beautiful ship on the seas
+- coward                                                        - sinks a U-boat preparing to fire on her, saves sinking ships in danger zones, fitted with guns during wartime
+- will die and be forgotten                         - nicknamed 'Old Reliable' and scrapped to build the Queen Mary which still exists
+- bad fashion sense                                     - dazzle camouflage to confuse enemies while also being absolute drip
+- smol                                                             - largest ship in the world 
+- scared of weapons                                   - torpedo proof, rammed and sank a U-boat, unsinkable (not even a warship)"""
         self.space = "​\n"*50
 
 class Song: # class with repeatedly accessed song information
