@@ -155,6 +155,20 @@ async def beans(ctx):
 async def olympic(ctx):
     await ctx.send(copypastas.olympic)
 
+# command status
+@withrepr(lambda x: "Change bot status with <type> <name>.")
+@client.command()
+async def status(ctx,typ='p',*,status=''):
+	# find status type
+	if typ in ['playing','p']: ty = discord.ActivityType.playing
+	elif typ in ['watching','w']: ty = discord.ActivityType.watching
+	elif typ in ['streaming','s']: ty = discord.ActivityType.streaming
+	elif typ in ['listening','l']: ty = discord.ActivityType.listening
+	else: ty = discord.ActivityType.playing
+	status = status[:128] # status is 128 chars max
+	await client.change_presence(activity=discord.Activity(type=ty,name=status)) # change presence
+
+# command prefix
 @withrepr(lambda x: 'Change the prefix (admin only).')
 @client.command()
 async def prefix(ctx,p:str):
