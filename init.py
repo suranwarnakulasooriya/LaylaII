@@ -17,8 +17,8 @@ from youtube_search import YoutubeSearch # to get multiple results in search com
 from discord import FFmpegPCMAudio # to stream audio
 
 # to keep alive 24/7
-#from flask import Flask
-#from threading import Thread
+from flask import Flask
+from threading import Thread
 
 # for music duration and cooldown
 from datetime import timedelta as td
@@ -80,7 +80,7 @@ class Log(Cog): # cog listeners for ranking
 
     @Cog.listener("on_message")
     async def on_message(self,message):
-        if client.user.mentioned_in(message): # show prefix when mentioned
+        if client.user.mentioned_in(message) and '@here' not in message.content and '@everyone' not in message.content: # show prefix when mentioned
             await message.channel.send(f"My prefix is `{self.obj.prefix}`")
         if not message.author.bot:
             if message.author.id not in U: U[message.author.id] = User(message.author.id,self.obj)
@@ -219,8 +219,8 @@ def withrepr(reprfun):
     return _wrap
 
 # initialize Bot object
-with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close() # read token from local file
-#bot_token = os.environ['TOKEN'] # read token as environment variable
+#with open('/home/suranwarnakulasooriya/Desktop/LaylaII_token.txt','r') as f: bot_token = f.read(); f.close() # read token from local file
+bot_token = os.environ['TOKEN'] # read token as environment variable
 Bot = Bot_Info(bot_token)
 
 # initialize dict of user ranking objects
@@ -245,6 +245,9 @@ green = 0x3ce74c
 purple = 0xb07bff
 
 # initialize Discord client
-activity = discord.Activity(name='under development, please do not use', type=discord.ActivityType.playing)
-client = commands.Bot(command_prefix=Bot.prefix,help_command=None,activity=activity)
+intents = discord.Intents.default()
+intents.presences = True
+intents.members = True
+activity = discord.Activity(name='your every move', type=discord.ActivityType.watching)
+client = commands.Bot(command_prefix=Bot.prefix,help_command=None,activity=activity,intents=intents)
 client.add_cog(Log(client,Bot))
