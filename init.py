@@ -33,6 +33,9 @@ class Bot_Info: # class with basic bot info
         self.rate = int(data[1])
         self.cooldown = int(data[2])
         self.lvlroles = {}
+        with open('status.txt','r') as f: data = f.readlines(); f.close()
+        self.acttype = data[0]
+        self.status = data[1]
 
 async def roleup(message): # thresholds and role names
     author = U[message.author.id]
@@ -248,6 +251,11 @@ purple = 0xb07bff
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
-activity = discord.Activity(name='your every move', type=discord.ActivityType.watching)
+if 'playing' in Bot.acttype: ty = discord.ActivityType.playing
+elif 'watching' in Bot.acttype: ty = discord.ActivityType.watching
+elif 'listening' in Bot.acttype: ty = discord.ActivityType.listening
+elif 'streaming' in Bot.acttype: ty = discord.ActivityType.streaming
+else: ty = discord.ActivityType.playing
+activity = discord.Activity(name=Bot.status,type=ty)
 client = commands.Bot(command_prefix=Bot.prefix,help_command=None,activity=activity,intents=intents)
 client.add_cog(Log(client,Bot))
