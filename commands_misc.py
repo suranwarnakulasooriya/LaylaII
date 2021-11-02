@@ -167,6 +167,7 @@ async def status(ctx,typ='p',*,status=''):
 	else: ty = discord.ActivityType.playing
 	status = status[:128] # status is 128 chars max
 	await client.change_presence(activity=discord.Activity(type=ty,name=status)) # change presence
+	with open('status.txt','w') as f: f.write(f'{ty}\n{status}'); f.close()
 
 # command prefix
 @withrepr(lambda x: 'Change the prefix (admin only).')
