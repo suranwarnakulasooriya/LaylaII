@@ -19,7 +19,7 @@ pip install discord.py # connect to Discord API
 pip install -U 'discord.py[voice]' # Discord voice support
 pip install PyNaCl # also Discord voice support
 pip install youtube-dl # get top result of search (doesn't return multiple results)
-pip install youtube_search # get top ten results (doesn't return URLs that ffmpeg can use, you might need to use --upgrade when installing on a repl server)
+pip install --upgrade youtube_search # get top ten results (doesn't return URLs that ffmpeg can use)
 pip install ffmpeg # stream audio
 ```
 
