@@ -95,11 +95,12 @@ class Log(Cog): # cog listeners for ranking
                     for line in lines: f.write(line); f.write('\n')
                     f.close()
                 if U[message.author.id].lvlup():
-                    await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}. {U[message.author.id].nxp}/{self.obj.rate*(U[message.author.id].lvl+1)} until level {U[message.author.id].lvl+1}.",color=message.author.color))
+                    await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has leveled up! Now level {U[message.author.id].lvl}.",color=message.author.color))
                     await roleup(message)
-        msg = message.content
+        msg = message.content.lower()
         if 'british' in msg or 'britain' in msg or 'french' in msg or 'france' in msg or 'league of legends' in msg:
             await message.channel.send(embed=discord.Embed(description=f"{message.author.mention} has said a banned word, -69 trillion social credits.",color=0xe74c3c))
+        elif "forgot" in msg or "forget" in msg or "forgotten" in msg: await message.channel.send("he forgor :skull:")
 
 class Copypastas: # create copypastas
     def __init__(self):
@@ -190,7 +191,6 @@ class User: # to store user ranking data
         self.nxp = nxp # xp gained after last lvl up
         self.clock = Stopwatch_() # for message cooldown
         self.clock.Start()
-        self.rate = bot.rate
     def __repr__(self):
         return f"xp: {self.xp}, lvl: {self.lvl}, nxp: {self.nxp}"
     def valid(self,cd):
@@ -199,8 +199,10 @@ class User: # to store user ranking data
             self.clock.Start()
             return True
         else: return False
+    def nextxp(self): # get the required xp to level up
+        return (self.lvl+1)**2+20
     def lvlup(self):
-        if self.nxp >= self.rate:
+        if self.nxp >= self.nextxp():
             self.lvl += 1
             self.nxp = 0
             return True
