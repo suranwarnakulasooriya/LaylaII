@@ -61,12 +61,12 @@ help_command_ = Help([['Copypastas','Send meaningless walls of text.'],
                      ['Music','RIP Groovy.'],
                      ['Ranking','Amari bad.'],
                      ['Misc','Other random garbage.']],
-                     [kira,napkin,neitzsche,linux,sunfish,beans,space,penis],
+                     [kira,napkin,neitzsche,linux,sunfish,beans,space,olympic,penis],
                      [stfu,ungovernable,nobodyasked,lmao,zook,nofucks,ugh,bullied,
                      zook2,anythingelse,hypno,cleanse,comedian,fish,stupid,jesus,
-                     begone,gun,crusader,bequiet,dildo,circus,ymir,fail,l1984],
+                     begone,gun,crusader,bequiet,dildo,iasked,circus,ymir,fail,l1984],
                      [readme,search,result,play,pause,resume,stop,loop,jump,np,next,queue,remove,clear,setcurrent,disconnect,leave],
-                     [rank,leaderboard,getcooldown,getrate,colors,setcolor,cooldown,changerate,givelevel],
+                     [rank,leaderboard,getcooldown,colors,setcolor,cooldown,givelevel],
                      [hello,prefix,status,say,mock,wide,thicc,smol,aussie,leet])
 
 @client.command()
