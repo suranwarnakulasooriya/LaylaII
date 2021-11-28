@@ -7,7 +7,7 @@ The primary features of Layla II are music streaming and a ranking system. Start
 
 Onto ranking, the bot is designed with a single server in mind and so cannot log xp and ranks for multiple servers. The bot increases a user's xp every time they send a message after a cooldown after their last message. Unlike the AmariBot that has a paid program that allows administrators to change the cooldown, Layla II can change the cooldown for free! The rate at which users level up is linear and the rate of leveling up can be changed. Users can see their xp and rank on command as well as see a leaderboard of the top 10 users with the most xp. Administrators can assign levels to users and users can give themselves color roles. The bot will give a user ranking roles if they reach xp thresholds. Any role related stuff is hard coded.
 
-The bot has other extraneous commands that I added for fun, including text manipulation, copypastas, and reaction images/videos. The init.py file reads a local txt file to obtain the token and obtains saved user data and the message cooldown in the same way (users.txt is not present in the repo for privacy reasons). If you want to plug this code into your bot, make a txt file with your token and read from it in init.py. Then run main.py to run your bot. There are many resources to help you set up a bot with Discord's developer API If you happen to find this GitHub page, you are free to do whatever you wish with my code. This is a project that I took on to kill time and get better at Python,  so I don't care about what you do with it. Read the MIT license for the specifics.
+The bot has other extraneous commands that I added for fun, including text manipulation, copypastas, and reaction images/videos. The init.py file reads a local txt file to obtain the token and obtains saved user data and the message cooldown in the same way (users.txt is not present in the repo for privacy reasons). If you want to plug this code into your bot, make a txt file with your token and read from it in init.py. Then run main.py to run your bot. There are many resources to help you set up a bot with Discord's developer API If you happen to find this GitHub page, you are free to do whatever you wish with my code. This is a project that I took on to kill time and get better at Python, so I don't care about what you do with it. Read the license for the specifics.
 
 ## Using Layla II
 
@@ -40,7 +40,7 @@ Occasionally, the music commands will fail to work. youtube-dl, ffmpeg, and disc
 # Music
 search(query) # shows the top 10 youtube results for the query
 result(index) # plays the index of a search result
-play(query) # plays + enqueues the queried song, works with searched and urls, will adjust if not in voice or if a song is already playing
+play(query) # plays + enqueues the queried song, works with searches and urls, will adjust if not in voice or if a song is already playing
 queue() # shows the queue
 join() # joins the voice channel of the author 
 leave() # leave voice and clear the queue
