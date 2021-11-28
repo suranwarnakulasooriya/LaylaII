@@ -62,6 +62,7 @@ cooldown(newcooldown) # (admin only) change the cooldown from 1-10
 getcooldown() # see what the current cooldown is without changing it
 leaderboard() # show the top 10 users with the most xp
 givelevel(user,level) # (admin only) assign a level to a user (changes xp accordingly)
+givexp(user,xp) # (admin only) assign xp to a user
 changerate(rate) # (admin only) change the rate at which users level up
 getrate() # see the current level up rate
 colors() # see all valid colors
