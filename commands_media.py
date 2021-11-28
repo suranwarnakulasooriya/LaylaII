@@ -195,3 +195,9 @@ async def nobodyasked(ctx):
 @client.command()
 async def lmao(ctx):
     await ctx.send("https://cdn.discordapp.com/attachments/682040935403618438/845839179685298266/videoplayback_6.mp4")
+
+# command lmao
+@withrepr(lambda x: "i asked")
+@client.command()
+async def iasked(ctx):
+    await ctx.send("https://cdn.discordapp.com/attachments/874447411144171610/911051527005822976/i_asked.mp4")
