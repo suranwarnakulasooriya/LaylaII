@@ -6,23 +6,24 @@ from init import *
 
 @withrepr(lambda x: 'See your rank in this server.')
 @client.command()
-async def rank(ctx):
-    if ctx.author.id in U:
-        user = U[ctx.author.id]
-        await ctx.send(embed=discord.Embed(description=f"{ctx.author.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{Bot.rate}] until level {user.lvl+1}.",color=ctx.author.color))
+async def rank(ctx,u:discord.User=None):
+    if u == None: u = ctx.author
+    if u.id in U:
+        user = U[u.id]
+        await ctx.send(embed=discord.Embed(description=f"{u.mention} is Level **{user.lvl}** with {user.xp} xp.\n[{user.nxp}/{user.nextxp()}] until level {user.lvl+1}.",color=u.color))
 
 @withrepr(lambda x: 'Change the message cooldown (admin only).')
 @client.command(aliases=['cool'])
 async def cooldown(ctx,c:int):
-    if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
-        await ctx.send(embed=discord.Embed(description="Cooldown out of range, give range between 1 and 10.",color=red))
-    else:
-        if ctx.author.guild_permissions.administrator:
+    if ctx.author.guild_permissions.administrator:
+        if c < 0 or c > 10: # allowing 0 is intentional to make debugging easier
+            await ctx.send(embed=discord.Embed(description="Cooldown out of range, give range between 1 and 10.",color=red))
+        else:
             with open("data.txt",'w') as f: f.write(f"{Bot.prefix} {Bot.rate} {c}"); f.close()
             await ctx.send(embed=discord.Embed(description=f"Cooldown set from {Bot.cooldown} to {c}.",color=green))
             Bot.cooldown = c
-        else:
-            await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))
+    else:
+        await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))
 
 @withrepr(lambda x: 'See the current cooldown.')
 @client.command(aliases=['getcool','getcd'])
@@ -31,15 +32,20 @@ async def getcooldown(ctx):
 
 @withrepr(lambda x: 'See the top 10 most active users.')
 @client.command(aliases=['leads','lead','leaders'])
-async def leaderboard(ctx):
+async def leaderboard(ctx,all=''):
+    if all.lower() == 'all': all = True
+    else: all = False
     server = []
     for user in U:
         server.append((U[user].id,U[user].xp))
-    server = sorted(server,key=lambda x:x[1],reverse=True)[:min(10,len(server))]
+    if not all: m = 10
+    elif all and len(server) <= 30: m = 31
+    elif all and len(server) > 30: m = 30
+    server = sorted(server,key=lambda x:x[1],reverse=True)[:min(m,len(server))]
     desc = ''
     for i,user in enumerate(server):
         desc += f'#{i+1}) <@!{user[0]}>, Level: **{U[user[0]].lvl}**, Xp: {user[1]}\n\n'
-    embed = discord.Embed(title='Leaderboard',description=desc,color=purple)
+    embed = discord.Embed(title=f'Leaderboard - Top {min(m,len(server))}',description=desc,color=purple)
     await ctx.send(embed=embed)
 
 @withrepr(lambda x: 'Assign a level to a user (admin only).')
@@ -47,32 +53,32 @@ async def leaderboard(ctx):
 async def givelevel(ctx,user:discord.User=None,lvl=0):
     if ctx.author.guild_permissions.administrator:
         try:
-            U[user.id] = User(user.id,Bot,lvl*Bot.rate,lvl,0)
-            await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{lvl*Bot.rate} xp].",color=green))
+            xp = sum([x**2 for x in range(lvl+1)])+20*(lvl!=0)
+            U[user.id] = User(user.id,Bot,xp,lvl,0)
+            await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} level {lvl} [{xp} xp].",color=green))
             await roleup(ctx)
         except:
             await ctx.send(embed=discord.Embed(description="Something went wrong.",color=red))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))
 
-@withrepr(lambda x: 'Change the rate at which users level up (admin only).')
+@withrepr(lambda x: 'Assign xp to a user (admin only).')
 @client.command()
-async def changerate(ctx,rate:int):
+async def givexp(ctx,user:discord.User=None,xp=0):
     if ctx.author.guild_permissions.administrator:
-        if rate < 50 or rate > 1000:
-            await ctx.send(embed=discord.Embed(description="Rate out of range, pick a range between 50-1000",color=red))
-        else:
-            with open('data.txt','w') as f: f.write(f"{Bot.prefix} {rate} {Bot.cooldown}"); f.close()
-            Bot.rate = rate
-            for user in U: U[user].rate = rate; U[user].xp = U[user].lvl*rate+min(rate,U[user].nxp)
-            await ctx.send(embed=discord.Embed(description=f"Changed level up rate to {rate}.",color=green))
+        try:
+            lvl = U[user.id].lvl
+            up = sum([x**2 for x in range(lvl+2)])+20*(lvl!=0)
+            low = sum([x**2 for x in range(lvl+1)])+20*(lvl!=0)
+            if low <= xp < up:
+                await ctx.send(embed=discord.Embed(description=f"Gave {user.mention} xp {xp}.",color=green))
+                U[user.id].xp = xp
+                U[user.id].nxp = xp-low
+            else: await ctx.send(embed=discord.Embed(description=f"Xp out of range ({low}-{up}) for this level ({lvl})."))
+        except:
+            await ctx.send(embed=discord.Embed(description="Something went wrong.",color=red))
     else:
         await ctx.send(embed=discord.Embed(description="You're not an admin. Denied.",color=red))
-
-@withrepr(lambda x: 'See the current rate.')
-@client.command()
-async def getrate(ctx):
-    await ctx.send(embed=discord.Embed(description=f"Level up rate is currently {Bot.rate} messages.",color=grey))
 
 @withrepr(lambda x: "See all valid colors.")
 @client.command()
